@@ -4,6 +4,14 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -15,5 +23,44 @@ package frc.robot;
 public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kAuxControllerPort = 1;
+    public static final double DEADBAND = .05;
+  }
+
+  public static class DriveLimits {
+    public static final double MAX_SPEED = Units.feetToMeters(10); // theoretical: 14.63 Ft/s
+    public static final double MEDIUM_SPEED_FACTOR = Units.feetToMeters(1);
+  }
+
+    public static final class OIConstants {
+    public static final int kDriverControllerPort = 0;
+    public static final double kDriveDeadband = 0.05;
+    public static final int kAuxControllerPort = 1;
+    public static final double kAuxDeadband = 0.05;
+
+    public static final double kFASTDRIVESPEEDLIMITER = .85;
+    public static final double kFASTROTSPEEDLIMITER = .75;
+
+    public static final double kSLOWDRIVESPEEDLIMITER = .3;
+    public static final double kSLOWROTSPEEDLIMITER = .25;
+  }
+
+  public static final class AutoConstants {
+    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+
+    public static final double kPXController = 1;
+    public static final double kPYController = 1;
+    public static final double kPThetaController = 1;
+
+    // Constraint for the motion profiled robot angle controller
+    public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
+        kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+  }
+
+  public static final class NeoMotorConstants {
+    public static final double kFreeSpeedRpm = 5676;
   }
 }
