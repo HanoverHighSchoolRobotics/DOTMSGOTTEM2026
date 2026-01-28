@@ -63,4 +63,29 @@ public final class Constants {
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
   }
+
+  public static final class ShooterConstants {
+    public static final int SHOOTERMOTORID = 9;
+    public static final double SHOOTERkP = .1;
+    public static final double MAXPIDVELOCITY = 5;
+    public static final double MAXPIDACCELERATION = 1;
+
+    // for state machine
+    public static final double REVERSESHOOTINGSPEED = .5;
+    public static final double NORMALSHOOTINGSPEED = .7;
+  }
+
+  public static final class IntakeConstants {
+    public static final int INTAKEMOTORID = 10;
+
+    // for state machine
+    public static final double INTAKINGSPEED = .5;
+    public static final double SPITOUTSPEED = .5;
+  }
+
+  public static final class FieldPoses {
+    public static final Pose2d BLUEHUBCENTER = new Pose2d(4.620, 4.025, new Rotation2d());
+    public static final Pose2d REDHUBCENTER = new Pose2d(11.920, 4.025, new Rotation2d()); 
+ 
+  }
 }

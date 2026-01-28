@@ -21,6 +21,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import swervelib.parser.SwerveParser;
@@ -29,6 +30,7 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 import swervelib.SwerveDrive;
 import swervelib.math.SwerveMath;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -39,6 +41,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.util.sendable.Sendable;
 import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 import static edu.wpi.first.units.Units.Meter;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -51,6 +54,8 @@ public class SwerveSubsystem extends SubsystemBase {
   SwerveDrive swerveDrive;
 
   VisionSubsystem vision;
+
+  PIDController rotationPID;
 
   private final Field2d m_field;
   
@@ -84,7 +89,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                0.1); //Correct for skew that gets worse as angular velocity increases. Start with a coefficient of 0.1.
                                                swerveDrive.setModuleEncoderAutoSynchronize(false,
                                                1); // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
-    swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
+
 
     setupPathPlanner();
 
@@ -92,6 +97,9 @@ public class SwerveSubsystem extends SubsystemBase {
     
     // Do this in either robot or subsystem init
     SmartDashboard.putData("Field", m_field);
+
+    rotationPID = new PIDController(1, 0, 0);
+    rotationPID.enableContinuousInput(-Math.PI, Math.PI);
   }
 
 
@@ -297,14 +305,6 @@ public class SwerveSubsystem extends SubsystemBase {
       () -> {zeroHeading();} 
       );
   }
-  // not for Rebuilt, but good knowledge on how to find distance between robot and objects
-  // public double distanceToReef() {
-  //   if (!isRedSide()) {
-  //     return Math.abs(swerveDrive.getPose().getTranslation().getDistance(Constants.FieldPoses.blueCenterOfReef.getTranslation()));
-  //   } else {
-  //     return Math.abs(swerveDrive.getPose().getTranslation().getDistance(Constants.FieldPoses.redCenterOfReef.getTranslation()));
-  //   }
-  // }
 
   /**
    * Returns a Command that drives the swerve drive to a specific distance at a given speed.
@@ -409,11 +409,11 @@ public class SwerveSubsystem extends SubsystemBase {
             // This will flip the path being followed to the red side of the field.
             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-            // var alliance = DriverStation.getAlliance();
-            // if (alliance.isPresent())
-            // {
-            //   return alliance.get() == DriverStation.Alliance.Red;
-            // }
+            var alliance = DriverStation.getAlliance();
+            if (alliance.isPresent())
+            {
+              return alliance.get() == DriverStation.Alliance.Red;
+            }
             return false;
           },
           this
@@ -469,6 +469,8 @@ public class SwerveSubsystem extends SubsystemBase {
         endSpeed);
   }
 
+
+
   /**
    * Use PathPlanner Path finding to go to a point on the field.
    *
@@ -503,6 +505,39 @@ public class SwerveSubsystem extends SubsystemBase {
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
   }
+
+  // gets the angle of the robot to the corresponding alliance hub from pathplanner perspective
+  public double getAngleToHub() {
+
+    if(!DriverStation.getAlliance().isPresent()){
+
+      return 0.0;
+    
+    } else {
+      
+      double verticalError;
+      double horizontalError;
+
+      if(DriverStation.getAlliance().get() == Alliance.Blue){
+        verticalError = Constants.FieldPoses.BLUEHUBCENTER.getY() - getPose().getY();
+        horizontalError = Constants.FieldPoses.BLUEHUBCENTER.getX() - getPose().getX();
+      } else {
+        verticalError = Constants.FieldPoses.REDHUBCENTER.getY() - getPose().getY();
+        horizontalError = Constants.FieldPoses.REDHUBCENTER.getX() - getPose().getX();
+      }
+
+      return Math.atan2(verticalError, horizontalError);
+    
+    }
+  }
+
+
+
+  public double hubAlignmentRotationalPIDOutput(){
+    return rotationPID.calculate(getPose().getRotation().getRadians(), getAngleToHub());
+  }
+
+
 
   /**
    * Get the path follower with events.

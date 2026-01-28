@@ -7,6 +7,8 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.IntakeStateSubsystem;
+import frc.robot.subsystems.IntakeStateSubsystem.IntakeState;
 import swervelib.SwerveInputStream;
 
 import java.io.File;
@@ -21,6 +23,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -32,6 +35,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  // The robot's subsystems and commands are defined here...
+  // Replace with CommandPS4Controller or CommandJoystick if needed
+  IntakeStateSubsystem intakeSub = new IntakeStateSubsystem();
+
   // The robot's subsystems and commands are defined here...
   private VisionSubsystem vision = new VisionSubsystem();
   private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "maxSwerve/DOTM2025"), vision); // where to configure the robot or "choose" it
@@ -55,14 +62,26 @@ public class RobotContainer {
     
     autoChooser = AutoBuilder.buildAutoChooser(); //pick a default
 
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    autoChooser.addOption("New Auto", new PathPlannerAuto("New Auto"));
 
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+    //added because purdue did it
+    SmartDashboard.putData(CommandScheduler.getInstance());
   }
 
-      SwerveInputStream driveAngularVelocity  = SwerveInputStream.of(driveBase.getSwerveDrive(),
+  SwerveInputStream driveAngularVelocity  = SwerveInputStream.of(driveBase.getSwerveDrive(),
+                                      () -> -m_driverController.getLeftY(), 
+                                      () -> -m_driverController.getLeftX())
+                                      .withControllerRotationAxis(() -> -m_driverController.getRightX())
+                                      .deadband(OperatorConstants.DEADBAND)
+                                      .scaleTranslation(0.8)
+                                      .allianceRelativeControl(true);
+             
+  // same as normal drive angular velocity but uses the PID Rotation function to align with the hub
+  SwerveInputStream driveAngularVelocityWithAngleHubAlignment  = SwerveInputStream.of(driveBase.getSwerveDrive(),
                                           () -> -m_driverController.getLeftY(), 
                                           () -> -m_driverController.getLeftX())
-                                          .withControllerRotationAxis(() -> -m_driverController.getRightX())
+                                          .withControllerRotationAxis(() -> driveBase.hubAlignmentRotationalPIDOutput())
                                           .deadband(OperatorConstants.DEADBAND)
                                           .scaleTranslation(0.8)
                                           .allianceRelativeControl(true);
@@ -79,45 +98,17 @@ public class RobotContainer {
 
   SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
                                                             .allianceRelativeControl(false);
-  SwerveInputStream driveRobotOrientedReefSpeed = driveRobotOriented.copy().scaleTranslation(0.2);
-  SwerveInputStream driveRobotOrientedReefFast  = driveRobotOriented.copy().scaleTranslation(2);
 
-  //For Simulation:
-  
-  SwerveInputStream driveAngularVelocityKeyboard = SwerveInputStream.of(driveBase.getSwerveDrive(),
-      () -> -m_driverController.getLeftY(),
-      () -> -m_driverController.getLeftX())
-    .withControllerRotationAxis(() -> m_driverController.getRightX())
-    .deadband(OperatorConstants.DEADBAND)
-    .scaleTranslation(0.8)
-    .allianceRelativeControl(true);
-  
-    //uses math to get heading
-  SwerveInputStream driveDirectAngleKeyboard = driveAngularVelocityKeyboard.copy()
-    .withControllerHeadingAxis(() ->
-                                  Math.sin(
-                                      m_driverController.getRightX()) *
-                                      Math.PI *
-                                  (Math.PI *
-                                    2),
-                              () ->
-                                  Math.cos(
-                                    m_driverController.getRightX()) *
-                                      Math.PI *
-                                  (Math.PI *
-                                    2))
-    .headingWhile(true)
-    .translationHeadingOffset(true)
-    .translationHeadingOffset(Rotation2d.fromDegrees(
-        0));
+
+
 
   Command driveFieldOrientedDirectAngle = driveBase.driveFieldOriented(driveDirectAngle);
   // Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveRegular); // Normal Drive
   Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveRegular); // Normal Drive
-  Command driveFieldOrientedAngularVelocitySlow = driveBase.driveFieldOriented(driveAngularVelocitySlow); // Right stick
-  // for simulation:
-  Command driveFieldOrientedDirectAngleKeyboard = driveBase.driveFieldOriented(driveDirectAngleKeyboard);
-  Command driveFieldOrientedAngularVelocityKeyboard = driveBase.driveFieldOriented(driveAngularVelocityKeyboard);
+  Command driveFieldOrientedAngularVelocitySlow = driveBase.driveFieldOriented(driveAngularVelocitySlow); 
+
+  Command driveFieldOrientedAngularVelocityWithAngleHubAlignment = driveBase.driveFieldOriented(driveAngularVelocityWithAngleHubAlignment);
+
 
 
   /**
@@ -130,6 +121,18 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    // m_driverController.a()
+
+
+    m_driverController.b()
+
+    .onTrue(intakeSub.setStateCmd(IntakeState.INTAKING))
+    .onFalse(intakeSub.setStateCmd(IntakeState.IDLE));
+
+    m_driverController.y()
+
+    .toggleOnTrue(driveFieldOrientedAngularVelocityWithAngleHubAlignment)
+    .toggleOnFalse(driveFieldOrientedAngularVelocity);
     // set to default drive, simulation code commented out
     // if (RobotBase.isSimulation())
     // {
@@ -137,10 +140,10 @@ public class RobotContainer {
     // } 
     // else 
     // {
-      driveBase.setDefaultCommand(driveFieldOrientedAngularVelocity);
+      driveBase.setDefaultCommand(driveFieldOrientedAngularVelocityWithAngleHubAlignment);
     // }
 
-    // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+
   }
 
     private void configureNamedCommands() {
