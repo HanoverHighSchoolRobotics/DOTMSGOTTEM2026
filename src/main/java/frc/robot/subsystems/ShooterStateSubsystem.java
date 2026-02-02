@@ -1,24 +1,40 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
+import frc.robot.Configs.ShooterConfigs;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterStateSubsystem extends SubsystemBase {
     private SparkMax motor;
     private RelativeEncoder encoder;
 
+    private PIDController pid = new PIDController(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
+    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ShooterConstants.kS, ShooterConstants.kV);
+
+    //suppliers
+    private DoubleSupplier distanceToHubSupplier;
+    private DoubleSupplier auxLeftY;
+
+
     public enum ShooterState {
         IDLE,
         NORMALSHOOTING,
+        JOYSTICKCONTROL,
         DISTANCEDEPENDENT,
         REVERSE
     }
@@ -39,12 +55,8 @@ public class ShooterStateSubsystem extends SubsystemBase {
     }
 
     // basic functionality
-    public void setShooterSpeed(double speed){
-        motor.set(speed);
-    }
-
-    public double getEncoderPos(){
-        return encoder.getPosition();
+    public void setShooterVoltage(double voltage){
+        motor.setVoltage(voltage);
     }
 
     @Override
@@ -57,6 +69,9 @@ public class ShooterStateSubsystem extends SubsystemBase {
             case NORMALSHOOTING:
                 normalshootingPeriodic();
                 break;
+            case JOYSTICKCONTROL:
+                joystickcontrolPeriodic();
+                break;
             case DISTANCEDEPENDENT:
                 distancedependentPeriodic();
                 break;
@@ -68,11 +83,18 @@ public class ShooterStateSubsystem extends SubsystemBase {
 
     //State periodic functions declared here
     public void idlePeriodic(){
-        setShooterSpeed(0);
+        setShooterVoltage(0);
     }
 
     public void normalshootingPeriodic(){
-        setShooterSpeed(ShooterConstants.NORMALSHOOTINGSPEED);
+        // setShooterVoltage(ShooterConstants.NORMALSHOOTINGVOLTAGE);
+        setShooterVoltage(
+            pid.calculate(getCurrentRadPerSec(), ShooterConstants.NORMALSHOOTINGRADPERSEC) 
+            + feedforward.calculate(ShooterConstants.NORMALSHOOTINGRADPERSEC));
+    }
+
+    public void joystickcontrolPeriodic(){
+        setShooterVoltage(auxLeftY.getAsDouble() * 10.0); //takes joystick value (-1 to 1) and multiplies by 10 volts
     }
 
     public void distancedependentPeriodic(){
@@ -80,7 +102,7 @@ public class ShooterStateSubsystem extends SubsystemBase {
     }
 
     public void reversePeriodic(){
-        setShooterSpeed(-1 * ShooterConstants.REVERSESHOOTINGSPEED);
+        setShooterVoltage(-1 * ShooterConstants.REVERSESHOOTINGVOLTAGE);
     }
 
     // change state method and command
@@ -93,5 +115,19 @@ public class ShooterStateSubsystem extends SubsystemBase {
         return runOnce(
             () -> setState(newState)
         );
+    }
+
+    //supplier gathering commands
+    public void setDistanceToHubSupplier(DoubleSupplier dist){
+        this.distanceToHubSupplier = dist;
+    }
+
+    public void setAuxLeftY(DoubleSupplier val){
+        this.auxLeftY = val;
+    }
+
+    //data gathering commands
+    public double getCurrentRadPerSec(){
+        return Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity());
     }
 }

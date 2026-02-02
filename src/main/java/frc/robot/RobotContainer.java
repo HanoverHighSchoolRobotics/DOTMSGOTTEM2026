@@ -8,7 +8,9 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.IntakeStateSubsystem;
+import frc.robot.subsystems.ShooterStateSubsystem;
 import frc.robot.subsystems.IntakeStateSubsystem.IntakeState;
+import frc.robot.subsystems.ShooterStateSubsystem.ShooterState;
 import swervelib.SwerveInputStream;
 
 import java.io.File;
@@ -38,6 +40,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   // Replace with CommandPS4Controller or CommandJoystick if needed
   IntakeStateSubsystem intakeSub = new IntakeStateSubsystem();
+  ShooterStateSubsystem shooterSub = new ShooterStateSubsystem();
 
   // The robot's subsystems and commands are defined here...
   private VisionSubsystem vision = new VisionSubsystem();
@@ -67,6 +70,12 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
     //added because purdue did it
     SmartDashboard.putData(CommandScheduler.getInstance());
+
+    //assign different values to the suppliers in the Supplier Registry
+    assignSuppliers();
+
+    //put suppliers in the subsystems they need to be in
+    transportSuppliers();
   }
 
   SwerveInputStream driveAngularVelocity  = SwerveInputStream.of(driveBase.getSwerveDrive(),
@@ -81,7 +90,7 @@ public class RobotContainer {
   SwerveInputStream driveAngularVelocityWithAngleHubAlignment  = SwerveInputStream.of(driveBase.getSwerveDrive(),
                                           () -> -m_driverController.getLeftY(), 
                                           () -> -m_driverController.getLeftX())
-                                          .withControllerRotationAxis(() -> driveBase.hubAlignmentRotationalPIDOutput())
+                                          .withControllerRotationAxis(() -> driveBase.getHubAlignmentRotationalPIDOutput())
                                           .deadband(OperatorConstants.DEADBAND)
                                           .scaleTranslation(0.8)
                                           .allianceRelativeControl(true);
@@ -121,18 +130,22 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // m_driverController.a()
+    m_driverController.a()
+      .onTrue(shooterSub.setStateCmd(ShooterState.NORMALSHOOTING))
+      .onFalse(shooterSub.setStateCmd(ShooterState.IDLE));
 
 
     m_driverController.b()
-
-    .onTrue(intakeSub.setStateCmd(IntakeState.INTAKING))
-    .onFalse(intakeSub.setStateCmd(IntakeState.IDLE));
+      .onTrue(intakeSub.setStateCmd(IntakeState.INTAKING))
+      .onFalse(intakeSub.setStateCmd(IntakeState.IDLE));
 
     m_driverController.y()
+      .toggleOnTrue(driveFieldOrientedAngularVelocityWithAngleHubAlignment)
+      .toggleOnFalse(driveFieldOrientedAngularVelocity);
 
-    .toggleOnTrue(driveFieldOrientedAngularVelocityWithAngleHubAlignment)
-    .toggleOnFalse(driveFieldOrientedAngularVelocity);
+    m_auxController.a()
+      .onTrue(shooterSub.setStateCmd(ShooterState.JOYSTICKCONTROL));
+
     // set to default drive, simulation code commented out
     // if (RobotBase.isSimulation())
     // {
@@ -140,14 +153,26 @@ public class RobotContainer {
     // } 
     // else 
     // {
-      driveBase.setDefaultCommand(driveFieldOrientedAngularVelocityWithAngleHubAlignment);
+      driveBase.setDefaultCommand(driveFieldOrientedAngularVelocity);
     // }
 
 
   }
 
-    private void configureNamedCommands() {
+  private void configureNamedCommands() {
 
+  }
+
+  private void assignSuppliers(){
+    SupplierRegistry.distanceToHub = 
+      () -> driveBase.getDistanceToHub();
+    SupplierRegistry.auxLeftY = 
+      () -> m_auxController.getLeftY();
+  }
+
+  private void transportSuppliers(){
+    shooterSub.setDistanceToHubSupplier(SupplierRegistry.distanceToHub);
+    shooterSub.setAuxLeftY(SupplierRegistry.auxLeftY);
   }
 
   /**

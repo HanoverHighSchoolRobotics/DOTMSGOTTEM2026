@@ -533,8 +533,32 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
 
-  public double hubAlignmentRotationalPIDOutput(){
+  public double getHubAlignmentRotationalPIDOutput(){
     return rotationPID.calculate(getPose().getRotation().getRadians(), getAngleToHub());
+  }
+
+  // for shooter, gets actual distance between center of robot and hub
+  public double getDistanceToHub(){
+    if(!DriverStation.getAlliance().isPresent()){
+
+      return 0.0;
+    
+    } else {
+      
+      double verticalError;
+      double horizontalError;
+
+      if(DriverStation.getAlliance().get() == Alliance.Blue){
+        verticalError = Constants.FieldPoses.BLUEHUBCENTER.getY() - getPose().getY();
+        horizontalError = Constants.FieldPoses.BLUEHUBCENTER.getX() - getPose().getX();
+      } else {
+        verticalError = Constants.FieldPoses.REDHUBCENTER.getY() - getPose().getY();
+        horizontalError = Constants.FieldPoses.REDHUBCENTER.getX() - getPose().getX();
+      }
+
+      return Math.hypot(verticalError, horizontalError);
+    
+    }
   }
 
 

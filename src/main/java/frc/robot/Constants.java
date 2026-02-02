@@ -4,9 +4,6 @@
 
 package frc.robot;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -66,13 +63,21 @@ public final class Constants {
 
   public static final class ShooterConstants {
     public static final int SHOOTERMOTORID = 9;
-    public static final double SHOOTERkP = .1;
-    public static final double MAXPIDVELOCITY = 5;
-    public static final double MAXPIDACCELERATION = 1;
+    public static final double kP = .1;
+    public static final double kI = 0;
+    public static final double kD = 0;
+
+    public static final double RPMATSIXVOLTS = 0; // figure out later
+    public static final double kS = 0; //figure out later
+    public static final double kV = ShooterConstants.RPMATSIXVOLTS / 6; //use sysid later
 
     // for state machine
-    public static final double REVERSESHOOTINGSPEED = .5;
-    public static final double NORMALSHOOTINGSPEED = .7;
+    public static final double NORMALSHOOTINGVOLTAGE = 6.0;
+    public static final double REVERSESHOOTINGVOLTAGE = 5.0;
+    public static final double SLOWSHOOTINGVOLTAGE = 4.0;
+
+    public static final double NORMALSHOOTINGRADPERSEC = 4000;
+
   }
 
   public static final class IntakeConstants {
@@ -86,6 +91,5 @@ public final class Constants {
   public static final class FieldPoses {
     public static final Pose2d BLUEHUBCENTER = new Pose2d(4.620, 4.025, new Rotation2d());
     public static final Pose2d REDHUBCENTER = new Pose2d(11.920, 4.025, new Rotation2d()); 
- 
   }
 }
