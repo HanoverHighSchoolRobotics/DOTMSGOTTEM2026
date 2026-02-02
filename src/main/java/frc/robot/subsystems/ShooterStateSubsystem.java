@@ -9,20 +9,19 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
-import frc.robot.Configs.ShooterConfigs;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterStateSubsystem extends SubsystemBase {
     private SparkMax motor;
     private RelativeEncoder encoder;
 
+    // this pid and feed forward will be used in radians (for the flywheel) and seconds
     private PIDController pid = new PIDController(ShooterConstants.kP, ShooterConstants.kI, ShooterConstants.kD);
     private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(ShooterConstants.kS, ShooterConstants.kV);
 
@@ -87,10 +86,12 @@ public class ShooterStateSubsystem extends SubsystemBase {
     }
 
     public void normalshootingPeriodic(){
-        // setShooterVoltage(ShooterConstants.NORMALSHOOTINGVOLTAGE);
-        setShooterVoltage(
-            pid.calculate(getCurrentRadPerSec(), ShooterConstants.NORMALSHOOTINGRADPERSEC) 
-            + feedforward.calculate(ShooterConstants.NORMALSHOOTINGRADPERSEC));
+        setShooterVoltage(ShooterConstants.NORMALSHOOTINGVOLTAGE);
+
+        // pid version, please use once you get sysid working
+        // setShooterVoltage(
+        //     pid.calculate(getCurrentRadPerSec(), ShooterConstants.NORMALSHOOTINGRADPERSEC) 
+        //     + feedforward.calculate(ShooterConstants.NORMALSHOOTINGRADPERSEC));
     }
 
     public void joystickcontrolPeriodic(){
@@ -98,7 +99,7 @@ public class ShooterStateSubsystem extends SubsystemBase {
     }
 
     public void distancedependentPeriodic(){
-
+        
     }
 
     public void reversePeriodic(){
@@ -108,10 +109,10 @@ public class ShooterStateSubsystem extends SubsystemBase {
     // change state method and command
     public void setState(ShooterState newState){
         this.state = newState;
+        SmartDashboard.putString("ShooterState", this.state.toString());
     }
 
     public Command setStateCmd(ShooterState newState){
-        SmartDashboard.putString("ShooterState", state.toString());
         return runOnce(
             () -> setState(newState)
         );

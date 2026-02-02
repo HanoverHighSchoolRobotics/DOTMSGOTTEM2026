@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -78,6 +79,9 @@ public final class Constants {
 
     public static final double NORMALSHOOTINGRADPERSEC = 4000;
 
+    // constants for voltage guesstimation for any distance away from the hub
+    
+
   }
 
   public static final class IntakeConstants {
@@ -86,6 +90,31 @@ public final class Constants {
     // for state machine
     public static final double INTAKINGSPEED = .5;
     public static final double SPITOUTSPEED = .5;
+  }
+
+  public static final class ClimberConstants{
+    public static final int CLIMBERMOTORLEFTID = 11;
+    public static final int CLIMBERMOTORRIGHTID = 12;
+    public static final double CLIMBGEARRATIO = 1 / 4; // 4 rotations of the motor will be one rotation of the pulley
+
+    public static final boolean RIGHTMOTORINVERTEDFROMLEFT = true;
+
+    // for state machine
+    public static final double RAISECLAWSVOLTS = .3 * 12;
+    public static final double LOWERCLAWSVOLTS = .4 * 12;
+
+    // pid configuration
+    public static final double MAXPIDVELOCITY = 1; // meters per sec
+    public static final double MAXPIDACCELERATION = 1; // meters per sec^2
+    public static final double PULLEYRADIUSMETERS = .3; // meters -- PLACEHOLDER
+    public static final double kP = 0;
+    public static final double kI = 0;
+    public static final double kD = 0;
+
+    // pid setpoints
+    public static final double CLAWSTOTOPMETERS = 1;
+    public static final double CLAWSTOROBOTLIFTEDMETERS = 0.5;
+    public static final double CLAWSTOBOTTOMMETERS = 0;
   }
 
   public static final class FieldPoses {

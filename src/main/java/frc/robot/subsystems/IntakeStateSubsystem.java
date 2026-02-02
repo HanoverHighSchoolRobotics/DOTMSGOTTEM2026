@@ -78,10 +78,10 @@ public class IntakeStateSubsystem extends SubsystemBase {
     // change state method and command
     public void setState(IntakeState newState){
         this.state = newState;
+        SmartDashboard.putString("IntakeState", this.state.toString());
     }
 
     public Command setStateCmd(IntakeState newState){
-        SmartDashboard.putString("IntakeState", state.toString());
         return runOnce(
             () -> setState(newState)
         );

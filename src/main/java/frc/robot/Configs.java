@@ -3,6 +3,8 @@ package frc.robot;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import frc.robot.Constants.ClimberConstants;
+
 
 
 public final class Configs {
@@ -23,6 +25,21 @@ public final class Configs {
             intakeMotorConfig
                 .idleMode(IdleMode.kCoast)
                 .smartCurrentLimit(50);
+        }
+    }
+
+    public static final class ClimberConfigs {
+        public static final SparkMaxConfig climberLeftMotorConfig = new SparkMaxConfig();
+        public static final SparkMaxConfig climberRightMotorConfig = new SparkMaxConfig();
+
+        static {
+            climberLeftMotorConfig
+                .idleMode(IdleMode.kBrake)
+                .smartCurrentLimit(50);
+            climberRightMotorConfig
+                .idleMode(IdleMode.kBrake)
+                .smartCurrentLimit(50)
+                .follow(ClimberConstants.CLIMBERMOTORLEFTID, ClimberConstants.RIGHTMOTORINVERTEDFROMLEFT);
         }
     }
 }
