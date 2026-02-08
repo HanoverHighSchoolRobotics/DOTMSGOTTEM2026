@@ -41,7 +41,7 @@
 //     public ShooterSubsystem() {
 //         this.motor = new SparkMax(ShooterConstants.SHOOTERMOTORID, MotorType.kBrushless);
 
-//         motor.configure(Configs.IntakeConfigs.intakeMotorConfig, ResetMode.kResetSafeParameters,
+//         motor.configure(Configs.ShooterConfigs.shooterMotorConfig, ResetMode.kResetSafeParameters,
 //             PersistMode.kPersistParameters);
 
 //         this.encoder = motor.getEncoder();
@@ -53,8 +53,8 @@
 //     }
 
 //     private void logData(SysIdRoutineLog log){
-//       AngularVelocity velocityRadPerSec = RadiansPerSecond.of(Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity()));
-//       Angle position = Radians.of(Units.rotationsToRadians(encoder.getPosition()));
+    //   AngularVelocity velocityRadPerSec = RadiansPerSecond.of(Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity())) * ShooterConstants.GEARRATIO;
+    //   Angle position = Radians.of(Units.rotationsToRadians(encoder.getPosition())) * ShooterConstants.GEARRATIO;
 //       Voltage appliedVoltage = Volts.of(motor.get() * RobotController.getBatteryVoltage());
 
 //       log.motor("flywheel")

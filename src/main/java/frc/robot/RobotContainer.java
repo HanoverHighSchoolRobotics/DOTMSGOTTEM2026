@@ -95,6 +95,15 @@ public class RobotContainer {
                                           .scaleTranslation(0.8)
                                           .allianceRelativeControl(true);
 
+  // orbits the robot around the hub
+  SwerveInputStream driveAngularVelocityOrbitHub  = SwerveInputStream.of(driveBase.getSwerveDrive(),
+                                          () -> driveBase.getXAxisToOrbitPIDOutput(), 
+                                          () -> driveBase.getYAxisToOrbitPIDOutput() + (Math.cos(driveBase.getAngleToHub()) * -m_driverController.getLeftX())) //will add joystick control scaled to the orbit speed we want
+                                          .withControllerRotationAxis(() -> driveBase.getHubAlignmentRotationalPIDOutput())
+                                          .deadband(OperatorConstants.DEADBAND)
+                                          .scaleTranslation(1.0)
+                                          .allianceRelativeControl(true);
+
   SwerveInputStream driveRegular = driveAngularVelocity.copy().scaleTranslation(1.05);
 
   SwerveInputStream driveAngularVelocitySlow = driveAngularVelocity.copy().scaleTranslation(Constants.DriveLimits.MEDIUM_SPEED_FACTOR);
@@ -117,6 +126,7 @@ public class RobotContainer {
   Command driveFieldOrientedAngularVelocitySlow = driveBase.driveFieldOriented(driveAngularVelocitySlow); 
 
   Command driveFieldOrientedAngularVelocityWithAngleHubAlignment = driveBase.driveFieldOriented(driveAngularVelocityWithAngleHubAlignment);
+  Command driveFieldOrientedAngularVelocityOrbitHub = driveBase.driveFieldOriented(driveAngularVelocityOrbitHub);
 
 
 
@@ -153,7 +163,7 @@ public class RobotContainer {
     // } 
     // else 
     // {
-      driveBase.setDefaultCommand(driveFieldOrientedAngularVelocity);
+      driveBase.setDefaultCommand(driveFieldOrientedAngularVelocityOrbitHub);
     // }
 
 

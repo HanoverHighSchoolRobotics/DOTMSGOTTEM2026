@@ -41,6 +41,8 @@ public final class Constants {
 
     public static final double kSLOWDRIVESPEEDLIMITER = .3;
     public static final double kSLOWROTSPEEDLIMITER = .25;
+
+    public static final double ORBITRADIUS = 3.0;
   }
 
   public static final class AutoConstants {
@@ -78,6 +80,8 @@ public final class Constants {
     public static final double SLOWSHOOTINGVOLTAGE = 4.0;
 
     public static final double NORMALSHOOTINGRADPERSEC = 4000;
+
+    public static final double GEARRATIO = 1 / 1; // a/b, b rotations of the motor will give a rotation of the flywheel
 
     // constants for voltage guesstimation for any distance away from the hub
     

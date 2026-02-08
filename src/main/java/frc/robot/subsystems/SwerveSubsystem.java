@@ -42,6 +42,8 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.util.sendable.Sendable;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants.OIConstants;
+
 import static edu.wpi.first.units.Units.Meter;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -56,6 +58,8 @@ public class SwerveSubsystem extends SubsystemBase {
   VisionSubsystem vision;
 
   PIDController rotationPID;
+  PIDController xAxisOrbitPID;
+  PIDController yAxisOrbitPID;
 
   private final Field2d m_field;
   
@@ -100,6 +104,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
     rotationPID = new PIDController(1, 0, 0);
     rotationPID.enableContinuousInput(-Math.PI, Math.PI);
+    rotationPID.setTolerance(.025 * 2 * Math.PI); //2.5 percent of a rotation is our tolerance
+
+    xAxisOrbitPID = new PIDController(1, 0, 0);
+    xAxisOrbitPID.setTolerance(.03); //3 centimeters is our x axis tolerance
+
+    yAxisOrbitPID = new PIDController(1, 0, 0);
+    yAxisOrbitPID.setTolerance(.03); //3 centimeters is our x axis tolerance
   }
 
 
@@ -332,13 +343,14 @@ public class SwerveSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Rotation").setNumber(swerveDrive.getPose().getRotation().getDegrees());
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position x").setNumber(swerveDrive.getPose().getX());
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position y").setNumber(swerveDrive.getPose().getY());
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("PoseYaw").setNumber(swerveDrive.getPose().getRotation().getDegrees());
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity Rotation").setNumber(swerveDrive.getRobotVelocity().omegaRadiansPerSecond);
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity x").setNumber(swerveDrive.getRobotVelocity().vxMetersPerSecond);
-    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity y").setNumber(swerveDrive.getRobotVelocity().vyMetersPerSecond);
+    // commented out bc why would we need all these network table entries?
+    // NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Rotation").setNumber(swerveDrive.getPose().getRotation().getDegrees());
+    // NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position x").setNumber(swerveDrive.getPose().getX());
+    // NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position y").setNumber(swerveDrive.getPose().getY());
+    // NetworkTableInstance.getDefault().getTable("Odometry").getEntry("PoseYaw").setNumber(swerveDrive.getPose().getRotation().getDegrees());
+    // NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity Rotation").setNumber(swerveDrive.getRobotVelocity().omegaRadiansPerSecond);
+    // NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity x").setNumber(swerveDrive.getRobotVelocity().vxMetersPerSecond);
+    // NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity y").setNumber(swerveDrive.getRobotVelocity().vyMetersPerSecond);
 
 
     vision.updateLimelightYaw(this);
@@ -561,6 +573,33 @@ public class SwerveSubsystem extends SubsystemBase {
     }
   }
 
+  public double getXAxisErrorToOrbit(){
+      if(DriverStation.getAlliance().get() == Alliance.Blue){
+        return Math.cos(getAngleToHub()) * (getDistanceToHub() - OIConstants.ORBITRADIUS);
+      } else if(DriverStation.getAlliance().get() == Alliance.Red) {
+        return -Math.cos(getAngleToHub()) * (getDistanceToHub() - OIConstants.ORBITRADIUS);
+      } else {
+        return 0; //if driver station alliance is not founnd
+      }
+    }
+
+  public double getYAxisErrorToOrbit(){
+      if(DriverStation.getAlliance().get() == Alliance.Blue){
+        return Math.sin(getAngleToHub()) * (getDistanceToHub() - OIConstants.ORBITRADIUS);
+      } else if(DriverStation.getAlliance().get() == Alliance.Red){
+        return -Math.sin(getAngleToHub()) * (getDistanceToHub() - OIConstants.ORBITRADIUS);
+      } else {
+        return 0; //if driver station alliance is not found
+      }
+    }
+
+  public double getXAxisToOrbitPIDOutput(){
+      return xAxisOrbitPID.calculate(getPose().getX(), getPose().getX() + getXAxisErrorToOrbit());
+  }
+
+  public double getYAxisToOrbitPIDOutput(){
+      return yAxisOrbitPID.calculate(getPose().getY(), getPose().getY() + getYAxisErrorToOrbit());
+  }
 
 
   /**

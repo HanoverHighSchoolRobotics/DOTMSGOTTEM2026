@@ -78,6 +78,8 @@ public class ShooterStateSubsystem extends SubsystemBase {
                 reversePeriodic();
                 break;
         }
+        SmartDashboard.putNumber("Flywheel Rad/Sec", getCurrentFlywheelRadPerSec());
+        SmartDashboard.putNumber("Flywheel Fed Voltage", motor.getBusVoltage());
     }
 
     //State periodic functions declared here
@@ -90,7 +92,7 @@ public class ShooterStateSubsystem extends SubsystemBase {
 
         // pid version, please use once you get sysid working
         // setShooterVoltage(
-        //     pid.calculate(getCurrentRadPerSec(), ShooterConstants.NORMALSHOOTINGRADPERSEC) 
+        //     pid.calculate(getCurrentFlywheelRadPerSec, ShooterConstants.NORMALSHOOTINGRADPERSEC) 
         //     + feedforward.calculate(ShooterConstants.NORMALSHOOTINGRADPERSEC));
     }
 
@@ -128,7 +130,8 @@ public class ShooterStateSubsystem extends SubsystemBase {
     }
 
     //data gathering commands
-    public double getCurrentRadPerSec(){
-        return Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity());
+        // gets the current flywheel rad per sec
+    public double getCurrentFlywheelRadPerSec(){
+        return Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity()) * ShooterConstants.GEARRATIO;
     }
 }
