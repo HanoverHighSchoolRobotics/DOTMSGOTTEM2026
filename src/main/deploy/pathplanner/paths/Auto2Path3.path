@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 0.5068045649072745,
+        "y": 5.956390870185451
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0,
-        "y": 7.0
+        "x": 1.5068045649072745,
+        "y": 5.956390870185451
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Negitive45PickUpBalls"
     },
     {
       "anchor": {
-        "x": 3.3403708987161194,
-        "y": 5.529415121255349
+        "x": 3.198,
+        "y": 4.791911554914011
       },
       "prevControl": {
-        "x": 2.3403708987161194,
-        "y": 5.529415121255349
+        "x": 2.198,
+        "y": 4.791911554914011
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Negitive45Shot"
     }
   ],
   "rotationTargets": [],
@@ -34,21 +34,21 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxAcceleration": 1.0,
+    "maxAngularVelocity": 180.0,
+    "maxAngularAcceleration": 180.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -28.072486935852908
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 2.749124199877321
+    "rotation": -177.67846941016717
   },
   "useDefaultConstraints": true
 }

@@ -91,6 +91,7 @@ public class ClimberStateSubsystem extends SubsystemBase {
                 pidclawstobottomPeriodic();
                 break;
         }
+        SmartDashboard.putNumber("Climber Height", getClimberHeightMeters());
     }
 
     //State periodic functions declared here

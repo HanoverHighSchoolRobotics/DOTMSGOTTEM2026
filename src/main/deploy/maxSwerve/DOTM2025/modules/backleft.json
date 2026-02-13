@@ -11,7 +11,7 @@
     },
     "encoder": {
       "type": "attached",
-      "id": 0,
+      "id": 1,
       "canbus": null
     },
     "inverted": {
@@ -19,7 +19,7 @@
       "angle": false
     },
     "absoluteEncoderInverted": true,
-    "absoluteEncoderOffset": 0.1745827,
+    "absoluteEncoderOffset": 0.83404565,
     "location": {
       "front": -12,
       "left": 12

@@ -39,8 +39,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  IntakeStateSubsystem intakeSub = new IntakeStateSubsystem();
-  ShooterStateSubsystem shooterSub = new ShooterStateSubsystem();
+  // IntakeStateSubsystem intakeSub = new IntakeStateSubsystem();
+  // ShooterStateSubsystem shooterSub = new ShooterStateSubsystem();
 
   // The robot's subsystems and commands are defined here...
   private VisionSubsystem vision = new VisionSubsystem();
@@ -51,8 +51,8 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
-  private final CommandXboxController m_auxController =
-      new CommandXboxController(OperatorConstants.kAuxControllerPort);
+  // private final CommandXboxController m_auxController =
+  //     new CommandXboxController(OperatorConstants.kAuxControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -115,7 +115,7 @@ public class RobotContainer {
                                                         //withControllerHeadingAxis(m_driverController::getRightX, m_driverController::getRightX  <- change this to Y for special mode
 
   SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
-                                                            .allianceRelativeControl(false);
+                                                          .allianceRelativeControl(false);
 
 
 
@@ -140,21 +140,27 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    m_driverController.a()
-      .onTrue(shooterSub.setStateCmd(ShooterState.NORMALSHOOTING))
-      .onFalse(shooterSub.setStateCmd(ShooterState.IDLE));
+    // m_driverController.a()
+    //   .onTrue(shooterSub.setStateCmd(ShooterState.NORMALSHOOTING))
+    //   .onFalse(shooterSub.setStateCmd(ShooterState.IDLE));
 
 
-    m_driverController.b()
-      .onTrue(intakeSub.setStateCmd(IntakeState.INTAKING))
-      .onFalse(intakeSub.setStateCmd(IntakeState.IDLE));
+    // m_driverController.b()
+    //   .onTrue(intakeSub.setStateCmd(IntakeState.INTAKING))
+    //   .onFalse(intakeSub.setStateCmd(IntakeState.IDLE));
 
     m_driverController.y()
       .toggleOnTrue(driveFieldOrientedAngularVelocityWithAngleHubAlignment)
       .toggleOnFalse(driveFieldOrientedAngularVelocity);
 
-    m_auxController.a()
-      .onTrue(shooterSub.setStateCmd(ShooterState.JOYSTICKCONTROL));
+    m_driverController.x().onTrue(driveBase.zeroHeadingCommand());
+
+    // m_driverController.x()
+    //   .toggleOnTrue(driveFieldOrientedAngularVelocityOrbitHub)
+    //   .toggleOnFalse(driveFieldOrientedAngularVelocity);
+
+    // m_auxController.a()
+    //   .onTrue(shooterSub.setStateCmd(ShooterState.JOYSTICKCONTROL));
 
     // set to default drive, simulation code commented out
     // if (RobotBase.isSimulation())
@@ -163,8 +169,9 @@ public class RobotContainer {
     // } 
     // else 
     // {
-      driveBase.setDefaultCommand(driveFieldOrientedAngularVelocityOrbitHub);
+      driveBase.setDefaultCommand(driveFieldOrientedAngularVelocity);
     // }
+    
 
 
   }
@@ -176,13 +183,13 @@ public class RobotContainer {
   private void assignSuppliers(){
     SupplierRegistry.distanceToHub = 
       () -> driveBase.getDistanceToHub();
-    SupplierRegistry.auxLeftY = 
-      () -> m_auxController.getLeftY();
+    // SupplierRegistry.auxLeftY = 
+    //   () -> m_auxController.getLeftY();
   }
 
   private void transportSuppliers(){
-    shooterSub.setDistanceToHubSupplier(SupplierRegistry.distanceToHub);
-    shooterSub.setAuxLeftY(SupplierRegistry.auxLeftY);
+    // shooterSub.setDistanceToHubSupplier(SupplierRegistry.distanceToHub);
+    // shooterSub.setAuxLeftY(SupplierRegistry.auxLeftY);
   }
 
   /**

@@ -101,12 +101,13 @@ public class SwerveSubsystem extends SubsystemBase {
     
     // Do this in either robot or subsystem init
     SmartDashboard.putData("Field", m_field);
+    SmartDashboard.putNumber("Heading", swerveDrive.getPose().getRotation().getDegrees());
 
     rotationPID = new PIDController(1, 0, 0);
     rotationPID.enableContinuousInput(-Math.PI, Math.PI);
     rotationPID.setTolerance(.025 * 2 * Math.PI); //2.5 percent of a rotation is our tolerance
 
-    xAxisOrbitPID = new PIDController(1, 0, 0);
+    xAxisOrbitPID = new PIDController(2, 0, 0);
     xAxisOrbitPID.setTolerance(.03); //3 centimeters is our x axis tolerance
 
     yAxisOrbitPID = new PIDController(1, 0, 0);
@@ -344,13 +345,13 @@ public class SwerveSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
 
     // commented out bc why would we need all these network table entries?
-    // NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Rotation").setNumber(swerveDrive.getPose().getRotation().getDegrees());
-    // NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position x").setNumber(swerveDrive.getPose().getX());
-    // NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position y").setNumber(swerveDrive.getPose().getY());
-    // NetworkTableInstance.getDefault().getTable("Odometry").getEntry("PoseYaw").setNumber(swerveDrive.getPose().getRotation().getDegrees());
-    // NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity Rotation").setNumber(swerveDrive.getRobotVelocity().omegaRadiansPerSecond);
-    // NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity x").setNumber(swerveDrive.getRobotVelocity().vxMetersPerSecond);
-    // NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity y").setNumber(swerveDrive.getRobotVelocity().vyMetersPerSecond);
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Rotation").setNumber(swerveDrive.getPose().getRotation().getDegrees());
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position x").setNumber(swerveDrive.getPose().getX());
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Position y").setNumber(swerveDrive.getPose().getY());
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("PoseYaw").setNumber(swerveDrive.getPose().getRotation().getDegrees());
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity Rotation").setNumber(swerveDrive.getRobotVelocity().omegaRadiansPerSecond);
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity x").setNumber(swerveDrive.getRobotVelocity().vxMetersPerSecond);
+    NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity y").setNumber(swerveDrive.getRobotVelocity().vyMetersPerSecond);
 
 
     vision.updateLimelightYaw(this);
