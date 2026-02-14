@@ -308,15 +308,24 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrive.resetOdometry(initialHolonomicPose);
   }
 
-  public void zeroHeading() {
+  public void zeroHeading()
+  {
     swerveDrive.zeroGyro();
   }
 
-  public Command zeroHeadingCommand() {
-    return runOnce(
-      () -> {zeroHeading();} 
-      );
+  public void zeroGyroWithAlliance()
+  {
+    if (DriverStation.getAlliance().get() == Alliance.Blue)
+    {
+      zeroHeading();
+      //Set the pose 180 degrees
+      resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(180)));
+    } else
+    {
+      zeroHeading();
+    }
   }
+
 
   /**
    * Returns a Command that drives the swerve drive to a specific distance at a given speed.
@@ -600,6 +609,14 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public double getYAxisToOrbitPIDOutput(){
       return yAxisOrbitPID.calculate(getPose().getY(), getPose().getY() + getYAxisErrorToOrbit());
+  }
+
+  public double getNegativeOnRed(){
+    if(DriverStation.getAlliance().get() == Alliance.Red){
+      return -1;
+    } else {
+      return 1;
+    }
   }
 
 

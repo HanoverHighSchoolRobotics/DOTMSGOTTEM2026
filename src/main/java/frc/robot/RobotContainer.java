@@ -4,22 +4,11 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.IntakeStateSubsystem;
-import frc.robot.subsystems.ShooterStateSubsystem;
-import frc.robot.subsystems.IntakeStateSubsystem.IntakeState;
-import frc.robot.subsystems.ShooterStateSubsystem.ShooterState;
-import swervelib.SwerveInputStream;
-
 import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -29,6 +18,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
+import swervelib.SwerveInputStream;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -97,8 +90,8 @@ public class RobotContainer {
 
   // orbits the robot around the hub
   SwerveInputStream driveAngularVelocityOrbitHub  = SwerveInputStream.of(driveBase.getSwerveDrive(),
-                                          () -> driveBase.getXAxisToOrbitPIDOutput(), 
-                                          () -> driveBase.getYAxisToOrbitPIDOutput() + (Math.cos(driveBase.getAngleToHub()) * -m_driverController.getLeftX())) //will add joystick control scaled to the orbit speed we want
+                                          () -> driveBase.getXAxisToOrbitPIDOutput() + (Math.sin(driveBase.getAngleToHub()) * -m_driverController.getLeftX() * -driveBase.getNegativeOnRed()),
+                                          () -> driveBase.getYAxisToOrbitPIDOutput() + (Math.cos(driveBase.getAngleToHub()) * -m_driverController.getLeftX() * driveBase.getNegativeOnRed())) //will add joystick control scaled to the orbit speed we want
                                           .withControllerRotationAxis(() -> driveBase.getHubAlignmentRotationalPIDOutput())
                                           .deadband(OperatorConstants.DEADBAND)
                                           .scaleTranslation(1.0)
@@ -140,20 +133,16 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // m_driverController.a()
-    //   .onTrue(shooterSub.setStateCmd(ShooterState.NORMALSHOOTING))
-    //   .onFalse(shooterSub.setStateCmd(ShooterState.IDLE));
+    m_driverController.a()
+      .toggleOnTrue(driveFieldOrientedAngularVelocity);
 
-
-    // m_driverController.b()
-    //   .onTrue(intakeSub.setStateCmd(IntakeState.INTAKING))
-    //   .onFalse(intakeSub.setStateCmd(IntakeState.IDLE));
+    m_driverController.b()
+      .toggleOnTrue(driveFieldOrientedAngularVelocityOrbitHub);
 
     m_driverController.y()
-      .toggleOnTrue(driveFieldOrientedAngularVelocityWithAngleHubAlignment)
-      .toggleOnFalse(driveFieldOrientedAngularVelocity);
+      .toggleOnTrue(driveFieldOrientedAngularVelocityWithAngleHubAlignment);
 
-    m_driverController.x().onTrue(driveBase.zeroHeadingCommand());
+    m_driverController.x().onTrue(Commands.runOnce(driveBase::zeroHeading));
 
     // m_driverController.x()
     //   .toggleOnTrue(driveFieldOrientedAngularVelocityOrbitHub)
