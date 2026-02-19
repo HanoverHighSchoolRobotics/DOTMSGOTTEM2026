@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5844365192582024,
-        "y": 5.917574893009986
+        "x": 3.4826961483594867,
+        "y": 5.956390870185448
       },
       "isLocked": false,
       "linkedName": "HorizontalPickUpBalls"
@@ -20,8 +20,8 @@
         "y": 3.9767760342368046
       },
       "prevControl": {
-        "x": 2.09453637660485,
-        "y": 3.9767760342368046
+        "x": 1.6324679029957196,
+        "y": 3.937960057061342
       },
       "nextControl": null,
       "isLocked": false,

@@ -35,6 +35,8 @@ public class IntakeStateSubsystem extends SubsystemBase {
 
         // start on idle
         state = IntakeState.IDLE;
+
+        SmartDashboard.putString("IntakeState", this.state.toString());
     }
 
     // basic functionality

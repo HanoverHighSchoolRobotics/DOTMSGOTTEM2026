@@ -19,6 +19,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.IntakeStateSubsystem;
+import frc.robot.subsystems.IntakeStateSubsystem.IntakeState;
+import frc.robot.subsystems.ShooterStateSubsystem;
+import frc.robot.subsystems.ShooterStateSubsystem.ShooterState;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import swervelib.SwerveInputStream;
@@ -38,6 +42,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private VisionSubsystem vision = new VisionSubsystem();
   private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "maxSwerve/DOTM2025"), vision); // where to configure the robot or "choose" it
+  private final IntakeStateSubsystem m_intake = new IntakeStateSubsystem();
+  private final ShooterStateSubsystem m_shooter = new ShooterStateSubsystem();
   private final SendableChooser<Command> autoChooser;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -143,6 +149,16 @@ public class RobotContainer {
       .toggleOnTrue(driveFieldOrientedAngularVelocityWithAngleHubAlignment);
 
     m_driverController.x().onTrue(Commands.runOnce(driveBase::zeroHeading));
+
+    m_driverController.rightBumper()
+    .onTrue(m_shooter.setStateCmd(ShooterState.NORMALSHOOTING))
+    .onFalse(m_shooter.setStateCmd(ShooterState.IDLE));
+
+    m_driverController.leftBumper()
+    .onTrue(m_intake.setStateCmd(IntakeState.INTAKING))
+    .onFalse(m_intake.setStateCmd(IntakeState.IDLE));
+
+
 
     // m_driverController.x()
     //   .toggleOnTrue(driveFieldOrientedAngularVelocityOrbitHub)

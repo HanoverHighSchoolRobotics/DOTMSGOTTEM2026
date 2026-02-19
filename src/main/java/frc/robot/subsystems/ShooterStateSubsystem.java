@@ -51,6 +51,9 @@ public class ShooterStateSubsystem extends SubsystemBase {
 
         // start on idle
         state = ShooterState.IDLE;
+        
+        SmartDashboard.putString("ShooterState", this.state.toString());
+
     }
 
     // basic functionality
