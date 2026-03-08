@@ -5,12 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "Auto2Path1"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "ShooterShoot"
@@ -35,7 +29,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Auto2Path2"
+                  "pathName": "Auto3Path2"
                 }
               },
               {
@@ -45,7 +39,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.0
+                        "waitTime": 3.0
                       }
                     },
                     {
@@ -61,9 +55,15 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "IntakeIdle"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Auto2Path3"
+            "pathName": "Auto3Path3"
           }
         },
         {

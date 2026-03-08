@@ -7,6 +7,7 @@ package frc.robot;
 import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -18,11 +19,13 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.IntakeStateSubsystem;
 import frc.robot.subsystems.IntakeStateSubsystem.IntakeState;
 import frc.robot.subsystems.ShooterStateSubsystem;
 import frc.robot.subsystems.ShooterStateSubsystem.ShooterState;
+// import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import swervelib.SwerveInputStream;
@@ -44,11 +47,14 @@ public class RobotContainer {
   private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "maxSwerve/DOTM2025"), vision); // where to configure the robot or "choose" it
   private final IntakeStateSubsystem m_intake = new IntakeStateSubsystem();
   private final ShooterStateSubsystem m_shooter = new ShooterStateSubsystem();
+  // private final ShooterSubsystem m_shooter = new ShooterSubsystem();
   private final SendableChooser<Command> autoChooser;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_auxController =
+      new CommandXboxController(OperatorConstants.kAuxControllerPort);
 
   // private final CommandXboxController m_auxController =
   //     new CommandXboxController(OperatorConstants.kAuxControllerPort);
@@ -64,8 +70,6 @@ public class RobotContainer {
     
     autoChooser = AutoBuilder.buildAutoChooser(); //pick a default
 
-    autoChooser.addOption("New Auto", new PathPlannerAuto("New Auto"));
-
     SmartDashboard.putData("Auto Chooser", autoChooser);
     //added because purdue did it
     SmartDashboard.putData(CommandScheduler.getInstance());
@@ -77,12 +81,12 @@ public class RobotContainer {
     transportSuppliers();
   }
 
-  SwerveInputStream driveAngularVelocity  = SwerveInputStream.of(driveBase.getSwerveDrive(),
+  SwerveInputStream driveAngularVelocityBase  = SwerveInputStream.of(driveBase.getSwerveDrive(),
                                       () -> -m_driverController.getLeftY(), 
                                       () -> -m_driverController.getLeftX())
                                       .withControllerRotationAxis(() -> -m_driverController.getRightX())
                                       .deadband(OperatorConstants.DEADBAND)
-                                      .scaleTranslation(0.8)
+                                      .scaleTranslation(1)
                                       .allianceRelativeControl(true);
              
   // same as normal drive angular velocity but uses the PID Rotation function to align with the hub
@@ -91,7 +95,7 @@ public class RobotContainer {
                                           () -> -m_driverController.getLeftX())
                                           .withControllerRotationAxis(() -> driveBase.getHubAlignmentRotationalPIDOutput())
                                           .deadband(OperatorConstants.DEADBAND)
-                                          .scaleTranslation(0.8)
+                                          .scaleTranslation(OIConstants.SLOWTRANSLATIONSCALE)
                                           .allianceRelativeControl(true);
 
   // orbits the robot around the hub
@@ -100,20 +104,23 @@ public class RobotContainer {
                                           () -> driveBase.getYAxisToOrbitPIDOutput() + (Math.cos(driveBase.getAngleToHub()) * -m_driverController.getLeftX() * driveBase.getNegativeOnRed())) //will add joystick control scaled to the orbit speed we want
                                           .withControllerRotationAxis(() -> driveBase.getHubAlignmentRotationalPIDOutput())
                                           .deadband(OperatorConstants.DEADBAND)
-                                          .scaleTranslation(1.0)
+                                          .scaleTranslation(OIConstants.SLOWTRANSLATIONSCALE)
                                           .allianceRelativeControl(true);
 
-  SwerveInputStream driveRegular = driveAngularVelocity.copy().scaleTranslation(1.05);
+  SwerveInputStream driveFast = driveAngularVelocityBase.copy()
+    .scaleTranslation(OIConstants.FASTTRANSLATIONSCALE)
+    .scaleRotation(OIConstants.FASTROTATIONSCALE);
 
-  SwerveInputStream driveAngularVelocitySlow = driveAngularVelocity.copy().scaleTranslation(Constants.DriveLimits.MEDIUM_SPEED_FACTOR);
+  SwerveInputStream driveSlow = driveAngularVelocityBase.copy()
+    .scaleTranslation(OIConstants.SLOWTRANSLATIONSCALE)
+    .scaleRotation(OIConstants.SLOWROTATIONSCALE);
 
-
-  SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
+  SwerveInputStream driveDirectAngle = driveAngularVelocityBase.copy()
                                                           .withControllerHeadingAxis(m_driverController::getRightX, 
                                                           m_driverController::getRightY).headingWhile(false);
                                                         //withControllerHeadingAxis(m_driverController::getRightX, m_driverController::getRightX  <- change this to Y for special mode
 
-  SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
+  SwerveInputStream driveRobotOriented = driveAngularVelocityBase.copy().robotRelative(true)
                                                           .allianceRelativeControl(false);
 
 
@@ -121,8 +128,8 @@ public class RobotContainer {
 
   Command driveFieldOrientedDirectAngle = driveBase.driveFieldOriented(driveDirectAngle);
   // Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveRegular); // Normal Drive
-  Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveRegular); // Normal Drive
-  Command driveFieldOrientedAngularVelocitySlow = driveBase.driveFieldOriented(driveAngularVelocitySlow); 
+  Command driveFastCmd = driveBase.driveFieldOriented(driveSlow); // Normal Drive
+  Command driveSlowCmd = driveBase.driveFieldOriented(driveFast); 
 
   Command driveFieldOrientedAngularVelocityWithAngleHubAlignment = driveBase.driveFieldOriented(driveAngularVelocityWithAngleHubAlignment);
   Command driveFieldOrientedAngularVelocityOrbitHub = driveBase.driveFieldOriented(driveAngularVelocityOrbitHub);
@@ -140,23 +147,32 @@ public class RobotContainer {
    */
   private void configureBindings() {
     m_driverController.a()
-      .toggleOnTrue(driveFieldOrientedAngularVelocity);
+      .toggleOnTrue(driveFastCmd);
+    //   .whileTrue(m_shooter.sysIdDynamicForward());
 
     m_driverController.b()
       .toggleOnTrue(driveFieldOrientedAngularVelocityOrbitHub);
+    //   .whileTrue(m_shooter.sysIdDynamicReverse());
 
     m_driverController.y()
       .toggleOnTrue(driveFieldOrientedAngularVelocityWithAngleHubAlignment);
+    //   .whileTrue(m_shooter.sysIdQuasistaticForward());
 
-    m_driverController.x().onTrue(Commands.runOnce(driveBase::zeroHeading));
+    m_driverController.x()
+      .onTrue(Commands.runOnce(driveBase::zeroGyroWithAlliance));
+      // .whileTrue(m_shooter.sysIdQuasistaticReverse());
 
-    m_driverController.rightBumper()
+    m_auxController.rightBumper()
     .onTrue(m_shooter.setStateCmd(ShooterState.NORMALSHOOTING))
-    .onFalse(m_shooter.setStateCmd(ShooterState.IDLE));
-
-    m_driverController.leftBumper()
-    .onTrue(m_intake.setStateCmd(IntakeState.INTAKING))
+    .onFalse(m_shooter.setStateCmd(ShooterState.IDLE))
+    .onTrue(m_intake.setStateCmd(IntakeState.SHOOT))
     .onFalse(m_intake.setStateCmd(IntakeState.IDLE));
+
+    m_auxController.leftBumper()
+    .onTrue(m_intake.setStateCmd(IntakeState.INTAKING))
+    .onTrue(m_shooter.setStateCmd(ShooterState.REVERSE))
+    .onFalse(m_intake.setStateCmd(IntakeState.IDLE))
+    .onFalse(m_shooter.setStateCmd(ShooterState.IDLE));
 
 
 
@@ -174,7 +190,7 @@ public class RobotContainer {
     // } 
     // else 
     // {
-      driveBase.setDefaultCommand(driveFieldOrientedAngularVelocity);
+      driveBase.setDefaultCommand(driveFastCmd);
     // }
     
 
@@ -182,7 +198,11 @@ public class RobotContainer {
   }
 
   private void configureNamedCommands() {
-
+    NamedCommands.registerCommand("ShooterShoot", m_shooter.setStateCmd(ShooterState.NORMALSHOOTING));
+    NamedCommands.registerCommand("ShooterIdle", m_shooter.setStateCmd(ShooterState.IDLE));
+    NamedCommands.registerCommand("IntakeShoot", m_intake.setStateCmd(IntakeState.SHOOT));
+    NamedCommands.registerCommand("IntakeIdle", m_intake.setStateCmd(IntakeState.IDLE));
+    NamedCommands.registerCommand("IntakeIntake", m_intake.setStateCmd(IntakeState.INTAKING));
   }
 
   private void assignSuppliers(){

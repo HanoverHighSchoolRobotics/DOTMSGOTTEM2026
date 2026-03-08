@@ -36,13 +36,13 @@ public final class Constants {
     public static final int kAuxControllerPort = 1;
     public static final double kAuxDeadband = 0.05;
 
-    public static final double kFASTDRIVESPEEDLIMITER = .85;
-    public static final double kFASTROTSPEEDLIMITER = .75;
+    public static final double FASTTRANSLATIONSCALE = .5;
+    public static final double FASTROTATIONSCALE = .5;
 
-    public static final double kSLOWDRIVESPEEDLIMITER = .3;
-    public static final double kSLOWROTSPEEDLIMITER = .25;
+    public static final double SLOWTRANSLATIONSCALE = .5;
+    public static final double SLOWROTATIONSCALE = .5;
 
-    public static final double ORBITRADIUS = 3.0;
+    public static final double ORBITRADIUS = 1.6;
   }
 
   public static final class AutoConstants {
@@ -75,7 +75,7 @@ public final class Constants {
     public static final double kV = ShooterConstants.RPMATSIXVOLTS / 6; //use sysid later
 
     // for state machine
-    public static final double NORMALSHOOTINGVOLTAGE = 6.0;
+    public static final double NORMALSHOOTINGVOLTAGE = 1.50;
     public static final double REVERSESHOOTINGVOLTAGE = 5.0;
     public static final double SLOWSHOOTINGVOLTAGE = 4.0;
 
@@ -92,8 +92,9 @@ public final class Constants {
     public static final int INTAKEMOTORID = 10;
 
     // for state machine
-    public static final double INTAKINGSPEED = .5;
-    public static final double SPITOUTSPEED = .5;
+    public static final double INTAKINGSPEED = 5.0;
+    public static final double SPITOUTSPEED = 6.0;
+    public static final double SHOOTSPEED = 8.0;
   }
 
   public static final class ClimberConstants{
@@ -104,8 +105,8 @@ public final class Constants {
     public static final boolean RIGHTMOTORINVERTEDFROMLEFT = true;
 
     // for state machine
-    public static final double RAISECLAWSVOLTS = .3 * 12;
-    public static final double LOWERCLAWSVOLTS = .4 * 12;
+    public static final double RAISECLAWSVOLTS = 5;
+    public static final double LOWERCLAWSVOLTS = 6;
 
     // pid configuration
     public static final double MAXPIDVELOCITY = 1; // meters per sec

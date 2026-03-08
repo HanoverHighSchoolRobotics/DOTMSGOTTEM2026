@@ -19,7 +19,8 @@ public class IntakeStateSubsystem extends SubsystemBase {
     public enum IntakeState {
         IDLE,
         INTAKING,
-        SPITOUT
+        SPITOUT,
+        SHOOT
     }
 
     private IntakeState state;
@@ -40,8 +41,8 @@ public class IntakeStateSubsystem extends SubsystemBase {
     }
 
     // basic functionality
-    public void setIntakeSpeed(double speed){
-        motor.set(speed);
+    public void setIntakeVoltage(double speed){
+        motor.setVoltage(speed);
     }
 
     public double getEncoderPos(){
@@ -61,20 +62,27 @@ public class IntakeStateSubsystem extends SubsystemBase {
             case SPITOUT:
                 spitoutPeriodic();
                 break;
+            case SHOOT:
+                shootPeriodic();
+                break;
         }
     }
 
     //State periodic functions declared here
     public void idlePeriodic(){
-        setIntakeSpeed(0);
+        setIntakeVoltage(0);
     }
 
     public void intakingPeriodic(){
-        setIntakeSpeed(IntakeConstants.INTAKINGSPEED);
+        setIntakeVoltage(IntakeConstants.INTAKINGSPEED);
     }
 
     public void spitoutPeriodic(){
-        setIntakeSpeed(-1 * IntakeConstants.SPITOUTSPEED);
+        setIntakeVoltage(-1 * IntakeConstants.SPITOUTSPEED);
+    }
+
+    public void shootPeriodic(){
+        setIntakeVoltage(IntakeConstants.SHOOTSPEED);
     }
 
     // change state method and command

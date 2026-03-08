@@ -46,7 +46,7 @@ public class ShooterStateSubsystem extends SubsystemBase {
 
         motor.configure(Configs.ShooterConfigs.shooterMotorConfig, ResetMode.kResetSafeParameters,
             PersistMode.kPersistParameters);
-
+        
         this.encoder = motor.getEncoder();
 
         // start on idle

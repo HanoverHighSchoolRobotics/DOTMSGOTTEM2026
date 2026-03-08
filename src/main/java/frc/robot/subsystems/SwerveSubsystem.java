@@ -103,14 +103,14 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putData("Field", m_field);
     SmartDashboard.putNumber("Heading", swerveDrive.getPose().getRotation().getDegrees());
 
-    rotationPID = new PIDController(1, 0, 0);
+    rotationPID = new PIDController(1, 0, .2);
     rotationPID.enableContinuousInput(-Math.PI, Math.PI);
     rotationPID.setTolerance(.025 * 2 * Math.PI); //2.5 percent of a rotation is our tolerance
 
-    xAxisOrbitPID = new PIDController(2, 0, 0);
+    xAxisOrbitPID = new PIDController(.75, 0, 0);
     xAxisOrbitPID.setTolerance(.03); //3 centimeters is our x axis tolerance
 
-    yAxisOrbitPID = new PIDController(1, 0, 0);
+    yAxisOrbitPID = new PIDController(.75, 0, 0);
     yAxisOrbitPID.setTolerance(.03); //3 centimeters is our x axis tolerance
   }
 
@@ -315,7 +315,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void zeroGyroWithAlliance()
   {
-    if (DriverStation.getAlliance().get() == Alliance.Blue)
+    if (DriverStation.getAlliance().get() == Alliance.Red)
     {
       zeroHeading();
       //Set the pose 180 degrees
@@ -556,7 +556,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
   public double getHubAlignmentRotationalPIDOutput(){
-    return rotationPID.calculate(getPose().getRotation().getRadians(), getAngleToHub());
+    return rotationPID.calculate(getPose().getRotation().getRadians(), getAngleToHub() + Math.PI);
   }
 
   // for shooter, gets actual distance between center of robot and hub

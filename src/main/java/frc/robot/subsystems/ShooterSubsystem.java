@@ -53,9 +53,9 @@
 //     }
 
 //     private void logData(SysIdRoutineLog log){
-    //   AngularVelocity velocityRadPerSec = RadiansPerSecond.of(Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity())) * ShooterConstants.GEARRATIO;
-    //   Angle position = Radians.of(Units.rotationsToRadians(encoder.getPosition())) * ShooterConstants.GEARRATIO;
-//       Voltage appliedVoltage = Volts.of(motor.get() * RobotController.getBatteryVoltage());
+//       AngularVelocity velocityRadPerSec = RadiansPerSecond.of(Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity()) * ShooterConstants.GEARRATIO);
+//       Angle position = Radians.of(Units.rotationsToRadians(encoder.getPosition()) * ShooterConstants.GEARRATIO);
+//       Voltage appliedVoltage = Volts.of(motor.getAppliedOutput() * motor.getBusVoltage());
 
 //       log.motor("flywheel")
 //           .voltage(appliedVoltage)

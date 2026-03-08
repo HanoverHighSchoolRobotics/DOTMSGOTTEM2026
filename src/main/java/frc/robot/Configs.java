@@ -13,7 +13,7 @@ public final class Configs {
 
         static {
             shooterMotorConfig
-                .idleMode(IdleMode.kCoast)
+                .idleMode(IdleMode.kBrake)
                 .smartCurrentLimit(50);
         }
     }
@@ -23,8 +23,9 @@ public final class Configs {
 
         static {
             intakeMotorConfig
-                .idleMode(IdleMode.kCoast)
-                .smartCurrentLimit(50);
+                .idleMode(IdleMode.kBrake)
+                .smartCurrentLimit(50)
+                .inverted(true);
         }
     }
 
