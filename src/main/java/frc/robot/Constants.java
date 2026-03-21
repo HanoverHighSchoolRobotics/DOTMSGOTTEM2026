@@ -36,13 +36,13 @@ public final class Constants {
     public static final int kAuxControllerPort = 1;
     public static final double kAuxDeadband = 0.05;
 
-    public static final double FASTTRANSLATIONSCALE = .5;
+    public static final double FASTTRANSLATIONSCALE = 1.00;
     public static final double FASTROTATIONSCALE = .5;
 
-    public static final double SLOWTRANSLATIONSCALE = .5;
+    public static final double SLOWTRANSLATIONSCALE = .2;
     public static final double SLOWROTATIONSCALE = .5;
 
-    public static final double ORBITRADIUS = 1.6;
+    public static final double ORBITRADIUS = 1.90;
   }
 
   public static final class AutoConstants {
@@ -76,8 +76,10 @@ public final class Constants {
 
     // for state machine
     public static final double NORMALSHOOTINGVOLTAGE = 1.50;
-    public static final double REVERSESHOOTINGVOLTAGE = 5.0;
+    public static final double REVERSESHOOTINGVOLTAGE = 8.0;
     public static final double SLOWSHOOTINGVOLTAGE = 4.0;
+    public static final double FASTSHOOTINGVOLTAGE = 3.5;
+
 
     public static final double NORMALSHOOTINGRADPERSEC = 4000;
 
@@ -92,35 +94,68 @@ public final class Constants {
     public static final int INTAKEMOTORID = 10;
 
     // for state machine
-    public static final double INTAKINGSPEED = 5.0;
+    public static final double INTAKINGFASTSPEED = 8.0;
+    public static final double INTAKINGSLOWSPEED = 4.5;
     public static final double SPITOUTSPEED = 6.0;
     public static final double SHOOTSPEED = 8.0;
   }
 
-  public static final class ClimberConstants{
-    public static final int CLIMBERMOTORLEFTID = 11;
-    public static final int CLIMBERMOTORRIGHTID = 12;
-    public static final double CLIMBGEARRATIO = 1 / 4; // 4 rotations of the motor will be one rotation of the pulley
-
-    public static final boolean RIGHTMOTORINVERTEDFROMLEFT = true;
+  public static final class EndshotConstants {
+    public static final int ENDSHOTMOTORID = 12;
 
     // for state machine
-    public static final double RAISECLAWSVOLTS = 5;
-    public static final double LOWERCLAWSVOLTS = 6;
+    public static final double SHOOTSPEED = 8.0;
+    public static final double INTAKINGSPEED = 4.5;
+    public static final double FASTSHOOTSPEED = 8.75;
+  }
 
-    // pid configuration
-    public static final double MAXPIDVELOCITY = 1; // meters per sec
-    public static final double MAXPIDACCELERATION = 1; // meters per sec^2
-    public static final double PULLEYRADIUSMETERS = .3; // meters -- PLACEHOLDER
-    public static final double kP = 0;
+  public static final class ExtendablehopperConstants {
+    public static final int EXTENDABLEHOPPERMOTORID = 13;
+
+    // for state machine
+    public static final double LETOUTVOLTS = 8.0;
+    public static final double PULLINVOLTS = 4.5;
+  }
+
+  public static final class IndexerConstants {
+    public static final int INDEXERMOTORID = 11;
+    
+    // for state machine
+    public static final double REVERSEINDEXINGVOLTS = 5.0;
+    public static final double INDEXINGVOLTS = 5.0;
+    public static final double INDEXINGTARGETRPM = 1.0;
+    public static final double kP = 5.0;
     public static final double kI = 0;
     public static final double kD = 0;
 
-    // pid setpoints
-    public static final double CLAWSTOTOPMETERS = 1;
-    public static final double CLAWSTOROBOTLIFTEDMETERS = 0.5;
-    public static final double CLAWSTOBOTTOMMETERS = 0;
   }
+
+  // public static final class ClimberConstants{
+  //   public static final int CLIMBERMOTORLEFTID = 11;
+  //   // public static final int CLIMBERMOTORRIGHTID = 12;
+  //   public static final double CLIMBGEARRATIO = 125 / 1; // 20/1 rotations of the motor will be one rotation of the pulley
+  //   public static final double PULLEYRADIUSMETERS = .022225; // meters -- PLACEHOLDER
+  //   public static final double ROTATIONSTOMETERS = 9616.056;
+
+  //   public static final boolean RIGHTMOTORINVERTEDFROMLEFT = true;
+
+  //   // for state machine
+  //   public static final double RAISECLAWSVOLTS = 9;
+  //   public static final double LOWERCLAWSVOLTS = 9;
+
+  //   // pid configuration
+  //   public static final double MAXPIDVELOCITY = 7; // meters per sec
+  //   public static final double MAXPIDACCELERATION = 7; // meters per sec^2
+  //   public static final double kP = 75;
+  //   public static final double kI = 0;
+  //   public static final double kD = 0;
+  //   // public static final double MAXCLIMBVOLTS = 8;
+
+  //   // pid setpoints
+  //   public static final double CLAWSTOTOPMETERS = .208;
+  //   public static final double CLAWSTOROBOTLIFTEDMETERS = .17;
+  //   public static final double CLAWSTOBOTTOMMETERS = 0;
+  // }
 
   public static final class FieldPoses {
     public static final Pose2d BLUEHUBCENTER = new Pose2d(4.620, 4.025, new Rotation2d());

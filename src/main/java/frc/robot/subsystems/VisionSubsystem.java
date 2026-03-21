@@ -151,7 +151,7 @@ public class VisionSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("limelightTV", LimelightHelpers.getTV(limelight));
     SmartDashboard.putNumber("limelightX", new PoseEstimate().pose.getX());
     SmartDashboard.putNumber("limelightY", new PoseEstimate().pose.getY());
-    return new PoseEstimate(); // IDK abt ths
+    return new PoseEstimate(); // IDK abt ts
   }
 
   public PoseEstimate[] getEstimatedGlobalPose(String[] limelights) {
@@ -168,7 +168,7 @@ public class VisionSubsystem extends SubsystemBase {
       num++;
     }
     return poseEsts;
-     // IDK abt ths
+     // IDK abt ts
   }
   public void updateLimelightYaw(SwerveSubsystem swerve) {
 

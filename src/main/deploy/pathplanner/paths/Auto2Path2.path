@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.551112696148359,
-        "y": 5.296519258202569
+        "x": 3.366248216833095,
+        "y": 3.937960057061342
       },
       "isLocked": false,
       "linkedName": "Negitive45Shot"
     },
     {
       "anchor": {
-        "x": 0.5068045649072745,
-        "y": 5.956390870185451
+        "x": 0.506804564907275,
+        "y": 0.6515406562054205
       },
       "prevControl": {
-        "x": 1.1149215406562043,
-        "y": 6.202225392296721
+        "x": 2.771069900142653,
+        "y": 0.6903566333808839
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -177.67846941016717
+    "rotation": -177.9174347202691
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -28.072486935852908
+    "rotation": 149.78756489040705
   },
   "useDefaultConstraints": true
 }

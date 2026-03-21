@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.506804564907275,
-        "y": 6.0081455064194005
+        "x": 0.4679885877318113,
+        "y": 0.6644793152639101
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.506804564907275,
-        "y": 6.0081455064194005
+        "x": 1.4679885877318113,
+        "y": 0.6644793152639101
       },
       "isLocked": false,
       "linkedName": "Positive45PickUpBalls"
@@ -20,8 +20,8 @@
         "y": 4.843666191155493
       },
       "prevControl": {
-        "x": 2.0076890156918683,
-        "y": 5.568231098430813
+        "x": 2.5122967189728955,
+        "y": 2.993437945791726
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -34.15969454566953
+    "rotation": 145.21086769107794
   },
   "reversed": false,
   "folder": null,

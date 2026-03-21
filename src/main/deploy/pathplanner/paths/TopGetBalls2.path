@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.506804564907275,
-        "y": 0.6515406562054205
+        "x": 7.461349397590361,
+        "y": 7.247746987951807
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3418313253012055,
-        "y": 0.6097160510802109
+        "x": 7.448410738531873,
+        "y": 6.445550126325558
       },
       "isLocked": false,
-      "linkedName": "Negitive45PickUpBalls"
+      "linkedName": "TopBullBalls"
     },
     {
       "anchor": {
-        "x": 3.198,
-        "y": 4.791911554914011
+        "x": 7.461349397590361,
+        "y": 4.636024096385543
       },
       "prevControl": {
-        "x": 2.8875178316690437,
-        "y": 3.5886162624821685
+        "x": 7.448410738531873,
+        "y": 5.334711685543888
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Negitive45Shot"
+      "linkedName": "TopBullBallsEnd"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 149.78756489040705
+    "rotation": -90.77422016492817
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -177.9174347202691
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

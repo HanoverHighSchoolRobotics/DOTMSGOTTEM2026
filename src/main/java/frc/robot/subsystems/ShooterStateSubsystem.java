@@ -35,7 +35,8 @@ public class ShooterStateSubsystem extends SubsystemBase {
         NORMALSHOOTING,
         JOYSTICKCONTROL,
         DISTANCEDEPENDENT,
-        REVERSE
+        REVERSE,
+        FASTSHOOT
     }
 
     private ShooterState state;
@@ -80,6 +81,9 @@ public class ShooterStateSubsystem extends SubsystemBase {
             case REVERSE:
                 reversePeriodic();
                 break;
+            case FASTSHOOT:
+                fastshootPeriodic();
+                break;
         }
         SmartDashboard.putNumber("Flywheel Rad/Sec", getCurrentFlywheelRadPerSec());
         SmartDashboard.putNumber("Flywheel Fed Voltage", motor.getBusVoltage());
@@ -109,6 +113,11 @@ public class ShooterStateSubsystem extends SubsystemBase {
 
     public void reversePeriodic(){
         setShooterVoltage(-1 * ShooterConstants.REVERSESHOOTINGVOLTAGE);
+    }
+
+    public void fastshootPeriodic(){
+        setShooterVoltage(ShooterConstants.FASTSHOOTINGVOLTAGE);
+
     }
 
     // change state method and command

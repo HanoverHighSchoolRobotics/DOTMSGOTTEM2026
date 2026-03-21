@@ -17,10 +17,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
+// import frc.robot.subsystems.ClimberStateSubsystem;
+import frc.robot.subsystems.EndshotStateSubsystem;
+import frc.robot.subsystems.EndshotStateSubsystem.EndshotState;
+import frc.robot.subsystems.IndexerSubsystem.IndexerState;
 import frc.robot.subsystems.IntakeStateSubsystem;
 import frc.robot.subsystems.IntakeStateSubsystem.IntakeState;
 import frc.robot.subsystems.ShooterStateSubsystem;
@@ -28,7 +34,10 @@ import frc.robot.subsystems.ShooterStateSubsystem.ShooterState;
 // import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+// import frc.robot.subsystems.ClimberStateSubsystem.ClimberState;
 import swervelib.SwerveInputStream;
+// import frc.robot.subsystems.IndexerSubsystem
+import frc.robot.subsystems.IndexerSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -46,7 +55,11 @@ public class RobotContainer {
   private VisionSubsystem vision = new VisionSubsystem();
   private final SwerveSubsystem driveBase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "maxSwerve/DOTM2025"), vision); // where to configure the robot or "choose" it
   private final IntakeStateSubsystem m_intake = new IntakeStateSubsystem();
+  private final EndshotStateSubsystem m_endshot = new EndshotStateSubsystem();
   private final ShooterStateSubsystem m_shooter = new ShooterStateSubsystem();
+  // private final IndexerSubsystem m_indexer = new IndexerSubsystem();
+  // private final ClimberStateSubsystem m_climb = new ClimberStateSubsystem();
+
   // private final ShooterSubsystem m_shooter = new ShooterSubsystem();
   private final SendableChooser<Command> autoChooser;
 
@@ -128,12 +141,11 @@ public class RobotContainer {
 
   Command driveFieldOrientedDirectAngle = driveBase.driveFieldOriented(driveDirectAngle);
   // Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveRegular); // Normal Drive
-  Command driveFastCmd = driveBase.driveFieldOriented(driveSlow); // Normal Drive
-  Command driveSlowCmd = driveBase.driveFieldOriented(driveFast); 
+  Command driveFastCmd = driveBase.driveFieldOriented(driveFast); // Normal Drive
+  Command driveSlowCmd = driveBase.driveFieldOriented(driveSlow); 
 
   Command driveFieldOrientedAngularVelocityWithAngleHubAlignment = driveBase.driveFieldOriented(driveAngularVelocityWithAngleHubAlignment);
   Command driveFieldOrientedAngularVelocityOrbitHub = driveBase.driveFieldOriented(driveAngularVelocityOrbitHub);
-
 
 
   /**
@@ -146,33 +158,81 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    m_driverController.a()
-      .toggleOnTrue(driveFastCmd);
+    // m_driverController.a()
+    //   .toggleOnTrue(driveFastCmd);
     //   .whileTrue(m_shooter.sysIdDynamicForward());
 
-    m_driverController.b()
-      .toggleOnTrue(driveFieldOrientedAngularVelocityOrbitHub);
+    m_driverController.rightTrigger(.5)
+      .toggleOnTrue(driveFieldOrientedAngularVelocityOrbitHub)
+      .toggleOnFalse(driveFastCmd);
     //   .whileTrue(m_shooter.sysIdDynamicReverse());
 
-    m_driverController.y()
-      .toggleOnTrue(driveFieldOrientedAngularVelocityWithAngleHubAlignment);
+    m_driverController.leftTrigger(.5)
+      .toggleOnTrue(driveFieldOrientedAngularVelocityWithAngleHubAlignment)
+      .toggleOnFalse(driveFastCmd);
     //   .whileTrue(m_shooter.sysIdQuasistaticForward());
 
     m_driverController.x()
+      .whileTrue(Commands.runOnce(driveBase::lock, driveBase).repeatedly());
+
+    m_driverController.back()
       .onTrue(Commands.runOnce(driveBase::zeroGyroWithAlliance));
       // .whileTrue(m_shooter.sysIdQuasistaticReverse());
 
+    m_driverController.rightBumper()
+      .toggleOnTrue(driveFastCmd);
+
+    m_driverController.leftBumper()
+      .toggleOnTrue(driveSlowCmd);
+ 
+    // shoot
     m_auxController.rightBumper()
-    .onTrue(m_shooter.setStateCmd(ShooterState.NORMALSHOOTING))
+    .onTrue(m_shooter.setStateCmd(ShooterState.FASTSHOOT))
     .onFalse(m_shooter.setStateCmd(ShooterState.IDLE))
     .onTrue(m_intake.setStateCmd(IntakeState.SHOOT))
-    .onFalse(m_intake.setStateCmd(IntakeState.IDLE));
+    .onFalse(m_intake.setStateCmd(IntakeState.IDLE))
+    .onTrue(m_endshot.setStateCmd(EndshotState.FASTSHOOT))
+    .onFalse(m_endshot.setStateCmd(EndshotState.IDLE));
 
     m_auxController.leftBumper()
-    .onTrue(m_intake.setStateCmd(IntakeState.INTAKING))
-    .onTrue(m_shooter.setStateCmd(ShooterState.REVERSE))
-    .onFalse(m_intake.setStateCmd(IntakeState.IDLE))
-    .onFalse(m_shooter.setStateCmd(ShooterState.IDLE));
+    .onTrue(m_intake.setStateCmd(IntakeState.INTAKINGSLOW))
+    // .onTrue(m_shooter.setStateCmd(ShooterState.REVERSE))
+    .onFalse(m_intake.setStateCmd(IntakeState.IDLE));
+    // .onFalse(m_shooter.setStateCmd(ShooterState.IDLE));
+
+    m_auxController.leftTrigger(.5)
+    .onTrue(m_intake.setStateCmd(IntakeState.INTAKINGFAST))
+    // .onTrue(m_shooter.setStateCmd(ShooterState.REVERSE))
+    .onFalse(m_intake.setStateCmd(IntakeState.IDLE));
+    // .onFalse(m_shooter.setStateCmd(ShooterState.IDLE));
+
+    //m_auxController.y()
+    // .onTrue(m_climb.setStateCmd(ClimberState.RAISECLAWS))
+    // .onFalse(m_climb.setStateCmd(ClimberState.IDLE));
+
+    //m_auxController.x()
+    // .onTrue(m_climb.setStateCmd(ClimberState.LOWERCLAWS))
+    // .onFalse(m_climb.setStateCmd(ClimberState.IDLE));
+
+    // ryan button
+    m_auxController.rightTrigger(.5)
+      .onTrue(m_shooter.setStateCmd(ShooterState.REVERSE))
+      .onFalse(m_shooter.setStateCmd(ShooterState.IDLE))
+      .onTrue(m_intake.setStateCmd(IntakeState.INTAKINGFAST))
+      .onFalse(m_intake.setStateCmd(IntakeState.IDLE));
+    
+    // m_auxController.x()
+    //   .onTrue(m_indexer.setStateCmd(IndexerState.INDEXING))
+    //   .onFalse(m_indexer.setStateCmd(IndexerState.IDLE));
+    
+    // m_auxController.a()
+    // // .onTrue(m_climb.setStateCmd(ClimberState.PIDCLAWSTOROBOTLIFTED))
+    // .onFalse(m_climb.setStateCmd(ClimberState.IDLE));
+
+    // m_auxController.b()
+    // .onTrue(m_climb.setStateCmd(ClimberState.PIDCLAWSTOBOTTOM))
+    // .onFalse(m_climb.setStateCmd(ClimberState.IDLE));
+    
 
 
 
@@ -198,11 +258,23 @@ public class RobotContainer {
   }
 
   private void configureNamedCommands() {
-    NamedCommands.registerCommand("ShooterShoot", m_shooter.setStateCmd(ShooterState.NORMALSHOOTING));
-    NamedCommands.registerCommand("ShooterIdle", m_shooter.setStateCmd(ShooterState.IDLE));
+    NamedCommands.registerCommand("ShooterShoot", 
+      new ParallelCommandGroup(
+        m_shooter.setStateCmd(ShooterState.NORMALSHOOTING),
+        m_endshot.setStateCmd(EndshotState.SHOOT)));
+        //  m_indexer.setStateCmd(IndexerState.INDEXING);
+        NamedCommands.registerCommand("ShooterIdle",
+        new ParallelCommandGroup(
+        m_shooter.setStateCmd(ShooterState.IDLE),
+        m_endshot.setStateCmd(EndshotState.IDLE)));
+        //  m_indexer.setStateCmd(IndexerState.IDLE)));
+    NamedCommands.registerCommand("ShooterReverse", m_shooter.setStateCmd(ShooterState.REVERSE));
+    NamedCommands.registerCommand("EndshotSpinup", m_endshot.setStateCmd(EndshotState.SHOOT));
+    NamedCommands.registerCommand("EndshotIdle", m_endshot.setStateCmd(EndshotState.IDLE));
     NamedCommands.registerCommand("IntakeShoot", m_intake.setStateCmd(IntakeState.SHOOT));
     NamedCommands.registerCommand("IntakeIdle", m_intake.setStateCmd(IntakeState.IDLE));
-    NamedCommands.registerCommand("IntakeIntake", m_intake.setStateCmd(IntakeState.INTAKING));
+    NamedCommands.registerCommand("IntakeIntake", m_intake.setStateCmd(IntakeState.INTAKINGFAST));
+    // NamedCommands.registerCommand("IndexIndexing", m_indexer.setStateCmd(IndexerState.INDEXING));
   }
 
   private void assignSuppliers(){

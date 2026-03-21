@@ -68,7 +68,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
   public SwerveSubsystem(File directory, VisionSubsystem vision) {
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
     this.vision = vision;
 
     try
@@ -103,7 +103,7 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putData("Field", m_field);
     SmartDashboard.putNumber("Heading", swerveDrive.getPose().getRotation().getDegrees());
 
-    rotationPID = new PIDController(1, 0, .2);
+    rotationPID = new PIDController(1, 0, 0);
     rotationPID.enableContinuousInput(-Math.PI, Math.PI);
     rotationPID.setTolerance(.025 * 2 * Math.PI); //2.5 percent of a rotation is our tolerance
 
@@ -111,7 +111,7 @@ public class SwerveSubsystem extends SubsystemBase {
     xAxisOrbitPID.setTolerance(.03); //3 centimeters is our x axis tolerance
 
     yAxisOrbitPID = new PIDController(.75, 0, 0);
-    yAxisOrbitPID.setTolerance(.03); //3 centimeters is our x axis tolerance
+    yAxisOrbitPID.setTolerance(.03); //3 centimeters is our y axis tolerance
   }
 
 
@@ -521,6 +521,11 @@ public class SwerveSubsystem extends SubsystemBase {
   public LinearVelocity getVelocityMagnitude() {
     ChassisSpeeds cs = getFieldVelocity();
     return MetersPerSecond.of(new Translation2d(cs.vxMetersPerSecond, cs.vyMetersPerSecond).getNorm());
+  }
+
+  public void lock()
+  {
+    swerveDrive.lockPose();
   }
 
   @Override

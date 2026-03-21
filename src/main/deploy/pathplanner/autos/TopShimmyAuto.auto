@@ -1,0 +1,166 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LineToTopShimmy"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShooterShoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeShoot"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 8.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShooterIdle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeIdle"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "TopShimmy"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "TopShimmy2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShooterShoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeShoot"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 8.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShooterIdle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeIdle"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "TopShimmy"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "TopShimmy2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShooterShoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeShoot"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 8.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShooterIdle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeIdle"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "TopShimmy"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "TopShimmy2"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

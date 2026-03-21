@@ -18,7 +18,8 @@ public class IntakeStateSubsystem extends SubsystemBase {
 
     public enum IntakeState {
         IDLE,
-        INTAKING,
+        INTAKINGFAST,
+        INTAKINGSLOW,
         SPITOUT,
         SHOOT
     }
@@ -56,8 +57,11 @@ public class IntakeStateSubsystem extends SubsystemBase {
             case IDLE:
                 idlePeriodic();
                 break;
-            case INTAKING:
-                intakingPeriodic();
+            case INTAKINGFAST:
+                intakingfastPeriodic();
+                break;
+            case INTAKINGSLOW:
+                intakingslowPeriodic();
                 break;
             case SPITOUT:
                 spitoutPeriodic();
@@ -73,8 +77,12 @@ public class IntakeStateSubsystem extends SubsystemBase {
         setIntakeVoltage(0);
     }
 
-    public void intakingPeriodic(){
-        setIntakeVoltage(IntakeConstants.INTAKINGSPEED);
+    public void intakingfastPeriodic(){
+        setIntakeVoltage(IntakeConstants.INTAKINGFASTSPEED);
+    }
+
+    public void intakingslowPeriodic(){
+        setIntakeVoltage(IntakeConstants.INTAKINGSLOWSPEED);
     }
 
     public void spitoutPeriodic(){

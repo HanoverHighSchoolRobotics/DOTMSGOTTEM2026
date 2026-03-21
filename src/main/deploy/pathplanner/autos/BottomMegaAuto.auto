@@ -7,53 +7,90 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LineToHorizontalShimmy"
+            "pathName": "LineToBottomShimmy"
           }
         },
         {
-          "type": "sequential",
+          "type": "named",
+          "data": {
+            "name": "ShooterShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeShoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BottomMegaToTrench"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BottomGetBalls1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeIntake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ShooterReverse"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BottomGetBalls2"
+          }
+        },
+        {
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "ShooterShoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeShoot"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 5.0
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ShooterIdle"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeIdle"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "HorizontalShimmy"
+                  "pathName": "BottomGetBalls3"
                 }
               },
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "HorizontalShimmy2"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ShooterIdle"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeIdle"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -78,7 +115,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 4.0
                 }
               },
               {
@@ -96,13 +133,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "HorizontalShimmy"
+                  "pathName": "BottomShimmy"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "HorizontalShimmy2"
+                  "pathName": "BottomShimmy2"
                 }
               }
             ]
@@ -127,7 +164,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 4.0
                 }
               },
               {
@@ -145,13 +182,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "HorizontalShimmy"
+                  "pathName": "BottomShimmy"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "HorizontalShimmy2"
+                  "pathName": "BottomShimmy2"
                 }
               }
             ]
@@ -176,7 +213,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 4.0
                 }
               },
               {
@@ -194,13 +231,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "HorizontalShimmy"
+                  "pathName": "BottomShimmy"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "HorizontalShimmy2"
+                  "pathName": "BottomShimmy2"
                 }
               }
             ]
@@ -225,7 +262,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 4.0
                 }
               },
               {
@@ -243,62 +280,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "HorizontalShimmy"
+                  "pathName": "BottomShimmy"
                 }
               },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "HorizontalShimmy2"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "ShooterShoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeShoot"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 5.0
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ShooterIdle"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeIdle"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "HorizontalShimmy"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "HorizontalShimmy2"
+                  "pathName": "BottomShimmy2"
                 }
               }
             ]
