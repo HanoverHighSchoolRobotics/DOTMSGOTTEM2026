@@ -9,6 +9,7 @@ import java.io.File;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -26,7 +27,7 @@ import frc.robot.Constants.OperatorConstants;
 // import frc.robot.subsystems.ClimberStateSubsystem;
 import frc.robot.subsystems.EndshotStateSubsystem;
 import frc.robot.subsystems.EndshotStateSubsystem.EndshotState;
-import frc.robot.subsystems.IndexerSubsystem.IndexerState;
+// import frc.robot.subsystems.IndexerSubsystem.IndexerState;
 import frc.robot.subsystems.IntakeStateSubsystem;
 import frc.robot.subsystems.IntakeStateSubsystem.IntakeState;
 import frc.robot.subsystems.ShooterStateSubsystem;
@@ -37,7 +38,7 @@ import frc.robot.subsystems.VisionSubsystem;
 // import frc.robot.subsystems.ClimberStateSubsystem.ClimberState;
 import swervelib.SwerveInputStream;
 // import frc.robot.subsystems.IndexerSubsystem
-import frc.robot.subsystems.IndexerSubsystem;
+// import frc.robot.subsystems.IndexerSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -133,8 +134,13 @@ public class RobotContainer {
                                                           m_driverController::getRightY).headingWhile(false);
                                                         //withControllerHeadingAxis(m_driverController::getRightX, m_driverController::getRightX  <- change this to Y for special mode
 
+  SwerveInputStream newAngleDrive = driveAngularVelocityBase.copy()
+                                          .withControllerRotationAxis(() -> driveBase.getAngleDrivePIDOutput(
+                                                                                m_driverController::getRightX, 
+                                                                                m_driverController::getRightY));
+
   SwerveInputStream driveRobotOriented = driveAngularVelocityBase.copy().robotRelative(true)
-                                                          .allianceRelativeControl(false);
+                                          .allianceRelativeControl(false);
 
 
 
@@ -143,6 +149,8 @@ public class RobotContainer {
   // Command driveFieldOrientedAngularVelocity = driveBase.driveFieldOriented(driveRegular); // Normal Drive
   Command driveFastCmd = driveBase.driveFieldOriented(driveFast); // Normal Drive
   Command driveSlowCmd = driveBase.driveFieldOriented(driveSlow); 
+
+  Command newAngleDriveCmd = driveBase.driveFieldOriented(newAngleDrive);
 
   Command driveFieldOrientedAngularVelocityWithAngleHubAlignment = driveBase.driveFieldOriented(driveAngularVelocityWithAngleHubAlignment);
   Command driveFieldOrientedAngularVelocityOrbitHub = driveBase.driveFieldOriented(driveAngularVelocityOrbitHub);
@@ -163,27 +171,30 @@ public class RobotContainer {
     //   .whileTrue(m_shooter.sysIdDynamicForward());
 
     m_driverController.rightTrigger(.5)
-      .toggleOnTrue(driveFieldOrientedAngularVelocityOrbitHub)
+      .toggleOnTrue(driveFieldOrientedAngularVelocityOrbitHub) // Orbits hub
       .toggleOnFalse(driveFastCmd);
     //   .whileTrue(m_shooter.sysIdDynamicReverse());
 
     m_driverController.leftTrigger(.5)
-      .toggleOnTrue(driveFieldOrientedAngularVelocityWithAngleHubAlignment)
+      .toggleOnTrue(driveFieldOrientedAngularVelocityWithAngleHubAlignment) // Alight with hub
       .toggleOnFalse(driveFastCmd);
     //   .whileTrue(m_shooter.sysIdQuasistaticForward());
 
     m_driverController.x()
-      .whileTrue(Commands.runOnce(driveBase::lock, driveBase).repeatedly());
+      .whileTrue(Commands.runOnce(driveBase::lock, driveBase).repeatedly()); // Brake
 
     m_driverController.back()
-      .onTrue(Commands.runOnce(driveBase::zeroGyroWithAlliance));
+      .onTrue(Commands.runOnce(driveBase::zeroGyroWithAlliance)); // Realign gyro
       // .whileTrue(m_shooter.sysIdQuasistaticReverse());
 
-    m_driverController.rightBumper()
+    m_driverController.rightBumper() // Fast
       .toggleOnTrue(driveFastCmd);
 
-    m_driverController.leftBumper()
+    m_driverController.leftBumper() // Slow
       .toggleOnTrue(driveSlowCmd);
+
+     m_driverController.b()
+      .onTrue(Commands.runOnce(() -> driveBase.zeroHeading(), driveBase));
  
     // shoot
     m_auxController.rightBumper()
@@ -192,27 +203,38 @@ public class RobotContainer {
     .onTrue(m_intake.setStateCmd(IntakeState.SHOOT))
     .onFalse(m_intake.setStateCmd(IntakeState.IDLE))
     .onTrue(m_endshot.setStateCmd(EndshotState.FASTSHOOT))
+    // .onTrue(m_indexer.setStateCmd(IndexerState.INDEXING))
+    // .onFalse(m_indexer.setStateCmd(IndexerState.IDLE))
     .onFalse(m_endshot.setStateCmd(EndshotState.IDLE));
 
-    m_auxController.leftBumper()
-    .onTrue(m_intake.setStateCmd(IntakeState.INTAKINGSLOW))
+    // m_auxController.x()
+    // .onTrue(m_intake.setStateCmd(IntakeState.INTAKINGSLOW))
     // .onTrue(m_shooter.setStateCmd(ShooterState.REVERSE))
-    .onFalse(m_intake.setStateCmd(IntakeState.IDLE));
+    // .onFalse(m_intake.setStateCmd(IntakeState.IDLE));
     // .onFalse(m_shooter.setStateCmd(ShooterState.IDLE));
+    //  .onTrue(m_indexer.setStateCmd(IndexerState.INDEXING))
+    //  .onFalse(m_indexer.setStateCmd(IndexerState.IDLE));
 
     m_auxController.leftTrigger(.5)
-    .onTrue(m_intake.setStateCmd(IntakeState.INTAKINGFAST))
-    // .onTrue(m_shooter.setStateCmd(ShooterState.REVERSE))
+    .onTrue(
+      new ParallelCommandGroup(
+        m_intake.setStateCmd(IntakeState.SHOOT),
+        m_endshot.setStateCmd(EndshotState.FASTSHOOT),
+        new SequentialCommandGroup(
+          Commands.waitSeconds(.5),
+          m_shooter.setStateCmd(ShooterState.FASTSHOOT)
+          // m_indexer.setStateCmd(IndexerState.INDEXING)
+        )))
+    .onFalse(m_shooter.setStateCmd(ShooterState.IDLE))
+    .onFalse(m_intake.setStateCmd(IntakeState.IDLE))
+    .onFalse(m_endshot.setStateCmd(EndshotState.IDLE));
+    // .onFalse(m_indexer.setStateCmd(IndexerState.IDLE));
+        
+
+    m_auxController.y()
+    .onTrue(m_intake.setStateCmd(IntakeState.SPITOUT))
     .onFalse(m_intake.setStateCmd(IntakeState.IDLE));
-    // .onFalse(m_shooter.setStateCmd(ShooterState.IDLE));
 
-    //m_auxController.y()
-    // .onTrue(m_climb.setStateCmd(ClimberState.RAISECLAWS))
-    // .onFalse(m_climb.setStateCmd(ClimberState.IDLE));
-
-    //m_auxController.x()
-    // .onTrue(m_climb.setStateCmd(ClimberState.LOWERCLAWS))
-    // .onFalse(m_climb.setStateCmd(ClimberState.IDLE));
 
     // ryan button
     m_auxController.rightTrigger(.5)
@@ -221,27 +243,36 @@ public class RobotContainer {
       .onTrue(m_intake.setStateCmd(IntakeState.INTAKINGFAST))
       .onFalse(m_intake.setStateCmd(IntakeState.IDLE));
     
-    // m_auxController.x()
-    //   .onTrue(m_indexer.setStateCmd(IndexerState.INDEXING))
-    //   .onFalse(m_indexer.setStateCmd(IndexerState.IDLE));
+    m_auxController.leftBumper()
+    .onTrue(m_shooter.setStateCmd(ShooterState.FASTSHOOT))
+    .onFalse(m_shooter.setStateCmd(ShooterState.IDLE))
+    .onTrue(m_intake.setStateCmd(IntakeState.SHOOT))
+    .onFalse(m_intake.setStateCmd(IntakeState.IDLE))
+    .onTrue(m_endshot.setStateCmd(EndshotState.FASTSHOOT))
+    .onFalse(m_endshot.setStateCmd(EndshotState.IDLE));
+    // .onTrue(m_indexer.setStateCmd(IndexerState.PIDINDEXING))
+    // .onFalse(m_indexer.setStateCmd(IndexerState.IDLE));
+
     
-    // m_auxController.a()
-    // // .onTrue(m_climb.setStateCmd(ClimberState.PIDCLAWSTOROBOTLIFTED))
-    // .onFalse(m_climb.setStateCmd(ClimberState.IDLE));
+    m_auxController.a()
+    .onTrue(m_shooter.setStateCmd(ShooterState.FASTSHOOT))
+    .onFalse(m_shooter.setStateCmd(ShooterState.IDLE))
+    .onTrue(m_intake.setStateCmd(IntakeState.SHOOT))
+    .onFalse(m_intake.setStateCmd(IntakeState.IDLE))
+    .onTrue(m_endshot.setStateCmd(EndshotState.FASTSHOOT))
+    .onFalse(m_endshot.setStateCmd(EndshotState.IDLE));
 
-    // m_auxController.b()
-    // .onTrue(m_climb.setStateCmd(ClimberState.PIDCLAWSTOBOTTOM))
-    // .onFalse(m_climb.setStateCmd(ClimberState.IDLE));
+    m_auxController.b()
+    .onTrue(m_intake.setStateCmd(IntakeState.SPITOUT))
+    .onFalse(m_intake.setStateCmd(IntakeState.IDLE))
+    .onTrue(m_shooter.setStateCmd(ShooterState.FASTSHOOT))
+    .onFalse(m_shooter.setStateCmd(ShooterState.IDLE));
+    //.onTrue(m_indexer.setStateCmd(IndexerState.INDEXING))
+   // .onFalse(m_indexer.setStateCmd(IndexerState.IDLE));
+
+
     
 
-
-
-    // m_driverController.x()
-    //   .toggleOnTrue(driveFieldOrientedAngularVelocityOrbitHub)
-    //   .toggleOnFalse(driveFieldOrientedAngularVelocity);
-
-    // m_auxController.a()
-    //   .onTrue(shooterSub.setStateCmd(ShooterState.JOYSTICKCONTROL));
 
     // set to default drive, simulation code commented out
     // if (RobotBase.isSimulation())
@@ -260,14 +291,14 @@ public class RobotContainer {
   private void configureNamedCommands() {
     NamedCommands.registerCommand("ShooterShoot", 
       new ParallelCommandGroup(
-        m_shooter.setStateCmd(ShooterState.NORMALSHOOTING),
-        m_endshot.setStateCmd(EndshotState.SHOOT)));
-        //  m_indexer.setStateCmd(IndexerState.INDEXING);
-        NamedCommands.registerCommand("ShooterIdle",
+        m_shooter.setStateCmd(ShooterState.FASTSHOOT),
+        m_endshot.setStateCmd(EndshotState.FASTSHOOT)));
+        // m_indexer.setStateCmd(IndexerState.PIDINDEXING)));
+    NamedCommands.registerCommand("ShooterIdle",
         new ParallelCommandGroup(
         m_shooter.setStateCmd(ShooterState.IDLE),
         m_endshot.setStateCmd(EndshotState.IDLE)));
-        //  m_indexer.setStateCmd(IndexerState.IDLE)));
+        // m_indexer.setStateCmd(IndexerState.IDLE)));
     NamedCommands.registerCommand("ShooterReverse", m_shooter.setStateCmd(ShooterState.REVERSE));
     NamedCommands.registerCommand("EndshotSpinup", m_endshot.setStateCmd(EndshotState.SHOOT));
     NamedCommands.registerCommand("EndshotIdle", m_endshot.setStateCmd(EndshotState.IDLE));

@@ -58,7 +58,7 @@ public final class Configs {
             indexerMotorConfig
                 .idleMode(IdleMode.kBrake)
                 .smartCurrentLimit(60)
-                .inverted(false);
+                .inverted(true);
         }
     }
 

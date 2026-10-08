@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+/*package frc.robot.subsystems;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
@@ -73,6 +73,8 @@ public class IndexerSubsystem extends SubsystemBase {
                 reverseindexingPeriodic();
                 break;
         }
+        SmartDashboard.putNumber("Indexer velocity", getEncoderVelocity());
+
     }
 
     //State periodic functions declared here
@@ -85,7 +87,7 @@ public class IndexerSubsystem extends SubsystemBase {
     }
 
     public void pidindexingPeriodic(){
-        setIndexerVoltage(IndexerConstants.INDEXINGVOLTS + pid.calculate(getEncoderVelocity(), IndexerConstants.INDEXINGTARGETRPM));
+        setIndexerVoltage(IndexerConstants.PIDINDEXINGBASEVOLTS + pid.calculate(getEncoderVelocity(), IndexerConstants.INDEXINGTARGETRPM));
     }
 
     public void reverseindexingPeriodic(){
@@ -103,4 +105,4 @@ public class IndexerSubsystem extends SubsystemBase {
             () -> setState(newState)
         );
     }
-}
+}*/

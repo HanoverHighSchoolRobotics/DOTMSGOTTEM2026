@@ -75,12 +75,10 @@ public final class Constants {
     public static final double kV = ShooterConstants.RPMATSIXVOLTS / 6; //use sysid later
 
     // for state machine
-    public static final double NORMALSHOOTINGVOLTAGE = 1.50;
+    public static final double NORMALSHOOTINGVOLTAGE = 5.75;
     public static final double REVERSESHOOTINGVOLTAGE = 8.0;
     public static final double SLOWSHOOTINGVOLTAGE = 4.0;
-    public static final double FASTSHOOTINGVOLTAGE = 3.5;
-
-
+    public static final double FASTSHOOTINGVOLTAGE = 6.75;
     public static final double NORMALSHOOTINGRADPERSEC = 4000;
 
     public static final double GEARRATIO = 1 / 1; // a/b, b rotations of the motor will give a rotation of the flywheel
@@ -94,19 +92,19 @@ public final class Constants {
     public static final int INTAKEMOTORID = 10;
 
     // for state machine
-    public static final double INTAKINGFASTSPEED = 8.0;
+    public static final double INTAKINGFASTSPEED = 8.0; 
     public static final double INTAKINGSLOWSPEED = 4.5;
     public static final double SPITOUTSPEED = 6.0;
-    public static final double SHOOTSPEED = 8.0;
+    public static final double SHOOTSPEED = 9.0;
   }
 
   public static final class EndshotConstants {
     public static final int ENDSHOTMOTORID = 12;
 
     // for state machine
-    public static final double SHOOTSPEED = 8.0;
-    public static final double INTAKINGSPEED = 4.5;
-    public static final double FASTSHOOTSPEED = 8.75;
+    public static final double SHOOTSPEED = 6.00; // originall 6.25
+    public static final double INTAKINGSPEED = 3.5; // originall 4.5
+    public static final double FASTSHOOTSPEED = 6.00; // originally 8.25
   }
 
   public static final class ExtendablehopperConstants {
@@ -117,18 +115,19 @@ public final class Constants {
     public static final double PULLINVOLTS = 4.5;
   }
 
-  public static final class IndexerConstants {
-    public static final int INDEXERMOTORID = 11;
+  //public static final class IndexerConstants {
+    //public static final int INDEXERMOTORID = 11;
     
     // for state machine
-    public static final double REVERSEINDEXINGVOLTS = 5.0;
-    public static final double INDEXINGVOLTS = 5.0;
-    public static final double INDEXINGTARGETRPM = 1.0;
-    public static final double kP = 5.0;
-    public static final double kI = 0;
-    public static final double kD = 0;
+    //public static final double REVERSEINDEXINGVOLTS = 5;
+    //public static final double INDEXINGVOLTS = 5;
+    //public static final double PIDINDEXINGBASEVOLTS = 2;
 
-  }
+    //public static final double INDEXINGTARGETRPM = 1063;
+    //public static final double kP = .00065;
+    //public static final double kI = 0;
+    //public static final double kD = 0;
+  // }
 
   // public static final class ClimberConstants{
   //   public static final int CLIMBERMOTORLEFTID = 11;

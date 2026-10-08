@@ -21,7 +21,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   UsbCamera camera1;
-  HttpCamera limelightFeed;
+  // UsbCamera camera2;
 
   private final RobotContainer m_robotContainer;
 
@@ -36,13 +36,12 @@ public class Robot extends TimedRobot {
 
     // // set up cameras
     // camera1 = CameraServer.startAutomaticCapture(0);
-    // camera1.setResolution(320,240);
-    // camera1.setFPS(15);
+    // camera1.setResolution(192,144);
+    // camera1.setFPS(10);
 
-    // limelightFeed = new HttpCamera("limelight", "http://10.15.22.11:5808/", HttpCameraKind.kMJPGStreamer);
-    // CameraServer.startAutomaticCapture(limelightFeed);
-    // limelightFeed.setResolution(320,240);
-    // limelightFeed.setFPS(15);
+    // camera2 = CameraServer.startAutomaticCapture(1);
+    // camera2.setResolution(320,240);
+    // camera2.setFPS(15);
   }
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics

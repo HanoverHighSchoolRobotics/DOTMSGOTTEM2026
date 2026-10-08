@@ -61,6 +61,8 @@ public class SwerveSubsystem extends SubsystemBase {
   PIDController xAxisOrbitPID;
   PIDController yAxisOrbitPID;
 
+  PIDController newRotPID;
+
   private final Field2d m_field;
   
 //   private final Pigeon2 pigeon2 = new Pigeon2(9, "rio"); // Pigeon is on roboRIO CAN Bus with device ID 9
@@ -68,7 +70,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
   public SwerveSubsystem(File directory, VisionSubsystem vision) {
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     this.vision = vision;
 
     try
@@ -112,6 +114,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     yAxisOrbitPID = new PIDController(.75, 0, 0);
     yAxisOrbitPID.setTolerance(.03); //3 centimeters is our y axis tolerance
+
+    newRotPID = new PIDController(.075, 0,0);
+    rotationPID.enableContinuousInput(-Math.PI, Math.PI);
+    rotationPID.setTolerance(.025 * 2 * Math.PI);
   }
 
 
@@ -325,6 +331,11 @@ public class SwerveSubsystem extends SubsystemBase {
       zeroHeading();
     }
   }
+ // DOOOOOOOOOOOOOOO THIS
+  // public void forwardGyro()
+  // {
+  //   resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees( )));
+  // }
 
 
   /**
@@ -362,10 +373,14 @@ public class SwerveSubsystem extends SubsystemBase {
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity x").setNumber(swerveDrive.getRobotVelocity().vxMetersPerSecond);
     NetworkTableInstance.getDefault().getTable("Odometry").getEntry("Robot Velocity y").setNumber(swerveDrive.getRobotVelocity().vyMetersPerSecond);
 
-
+    // stops something with the rotation fo the bot
     vision.updateLimelightYaw(this);
+
+
     // vision.updatePosesEstimator(swerveDrive);
     vision.updatePosesEstimatorMT2(swerveDrive);
+  
+    // update odometry should run on yagsl thread automatically, but if it works dont fix it 
     swerveDrive.updateOdometry(); // Might be redundant
 
     // String[] limelights = {"limelight-left", "limelight-right", "limelight-rear"};
@@ -614,6 +629,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public double getYAxisToOrbitPIDOutput(){
       return yAxisOrbitPID.calculate(getPose().getY(), getPose().getY() + getYAxisErrorToOrbit());
+  }
+
+  public double getAngleDrivePIDOutput(DoubleSupplier xaxis, DoubleSupplier yaxis){
+      double desiredAngle = Math.atan2(-yaxis.getAsDouble(), xaxis.getAsDouble());
+
+      return newRotPID.calculate(getPose().getRotation().getRadians(), desiredAngle + Math.PI);
   }
 
   public double getNegativeOnRed(){

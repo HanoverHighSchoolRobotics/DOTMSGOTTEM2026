@@ -6,7 +6,7 @@
       },
       "drive": {
         "gearRatio": 5.50,
-        "diameter": 3,
+        "diameter": 3.00,
         "factor": 0
       }
     },
@@ -20,5 +20,5 @@
     },
     "optimalVoltage": 12,
     "wheelGripCoefficientOfFriction": 1.19,
-    "robotMass": 100
+    "robotMass": 95
   }

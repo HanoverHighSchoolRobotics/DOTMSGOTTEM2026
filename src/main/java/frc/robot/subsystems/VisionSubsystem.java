@@ -54,21 +54,21 @@ public class VisionSubsystem extends SubsystemBase {
       }
     }
 
-    LimelightHelpers.SetIMUMode("limelight", 0);
+    LimelightHelpers.SetIMUMode("limelight-dotm", 0);
 
   }
 
 
   public boolean getTV() {
-    return LimelightHelpers.getTV("limelight");
+    return LimelightHelpers.getTV("limelight-dotm");
   }
 
   public double getTX() {
-    return LimelightHelpers.getTX("limelight");
+    return LimelightHelpers.getTX("limelight-dotm");
   }
 
   public void updatePoseEstimator(SwerveDrive swerve) {
-    PoseEstimate  poseEst = getEstimatedGlobalPose("limelight");
+    PoseEstimate  poseEst = getEstimatedGlobalPose("limelight-dotm");
       if (poseEst != null) {
         swerve.addVisionMeasurement(poseEst.pose, poseEst.timestampSeconds);
       }
@@ -79,7 +79,7 @@ public class VisionSubsystem extends SubsystemBase {
     double maxta = 0.4;
     String camera = null;
 
-    String[] limelights = {"limelight"}; // , "limelight-rear"
+    String[] limelights = {"limelight-dotm"}; // , "limelight-rear"
     // String[] limelights = {"limelight-right"};
     for (String limelight: limelights) {
       if (LimelightHelpers.getTV(limelight) && LimelightHelpers.getTA(limelight) > maxta) {
@@ -108,7 +108,7 @@ public class VisionSubsystem extends SubsystemBase {
     double maxta = 0;
     String camera = null;
     PoseEstimate mt2 = new PoseEstimate();
-    String[] limelights = {"limelight"}; // , "limelight-rear"
+    String[] limelights = {"limelight-dotm"}; // , "limelight-rear"
     for (String limelight: limelights) {
       LimelightHelpers.PoseEstimate megaTag2Pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
       LimelightHelpers.getBotPose2d_wpiBlue(limelight);
@@ -151,7 +151,7 @@ public class VisionSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("limelightTV", LimelightHelpers.getTV(limelight));
     SmartDashboard.putNumber("limelightX", new PoseEstimate().pose.getX());
     SmartDashboard.putNumber("limelightY", new PoseEstimate().pose.getY());
-    return new PoseEstimate(); // IDK abt ts
+    return new PoseEstimate(); // IDK abt this
   }
 
   public PoseEstimate[] getEstimatedGlobalPose(String[] limelights) {
@@ -170,20 +170,22 @@ public class VisionSubsystem extends SubsystemBase {
     return poseEsts;
      // IDK abt ts
   }
+
+  
   public void updateLimelightYaw(SwerveSubsystem swerve) {
 
-    double[] stddevs = NetworkTableInstance.getDefault().getTable("limelight")
+    double[] stddevs = NetworkTableInstance.getDefault().getTable("limelight-dotm")
                           .getEntry("stddevs").getDoubleArray(new double[12]);
-    double LL4yaw = LimelightHelpers.getIMUData("limelight").Yaw;
+    double LL4yaw = LimelightHelpers.getIMUData("limelight-dotm").Yaw;
     NetworkTableInstance.getDefault().getTable("Limelight stuff").getEntry("Stddevs").setDoubleArray(stddevs);
     NetworkTableInstance.getDefault().getTable("Limelight stuff").getEntry("Stddevs[5]").setDouble(stddevs[5]);
     NetworkTableInstance.getDefault().getTable("Limelight stuff").getEntry("LL4 Yaw").setDouble(LL4yaw);
 
     if (stddevs[5] < 1.5) {
-      LimelightHelpers.SetRobotOrientation("limelight", 
-          LimelightHelpers.getBotPose2d_wpiBlue("limelight").getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      LimelightHelpers.SetRobotOrientation("limelight-dotm", 
+          LimelightHelpers.getBotPose2d_wpiBlue("limelight-dotm").getRotation().getDegrees(), 0, 0, 0, 0, 0);
     } else {
-      LimelightHelpers.SetRobotOrientation("limelight", 
+      LimelightHelpers.SetRobotOrientation("limelight-dotm", 
           swerve.getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
       SmartDashboard.putBoolean("Limelight Yaw Type", false);
     }
@@ -194,7 +196,7 @@ public class VisionSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     
 
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-dotm");
     NetworkTableEntry tx = table.getEntry("tx");
     NetworkTableEntry ty = table.getEntry("ty");
     NetworkTableEntry ta = table.getEntry("ta");
