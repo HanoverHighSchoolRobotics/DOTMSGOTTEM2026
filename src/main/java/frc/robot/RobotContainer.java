@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -207,13 +208,11 @@ public class RobotContainer {
     // .onFalse(m_indexer.setStateCmd(IndexerState.IDLE))
     .onFalse(m_endshot.setStateCmd(EndshotState.IDLE));
 
-    // m_auxController.x()
-    // .onTrue(m_intake.setStateCmd(IntakeState.INTAKINGSLOW))
-    // .onTrue(m_shooter.setStateCmd(ShooterState.REVERSE))
-    // .onFalse(m_intake.setStateCmd(IntakeState.IDLE));
-    // .onFalse(m_shooter.setStateCmd(ShooterState.IDLE));
-    //  .onTrue(m_indexer.setStateCmd(IndexerState.INDEXING))
-    //  .onFalse(m_indexer.setStateCmd(IndexerState.IDLE));
+    m_auxController.x()
+      .onTrue(m_intake.setStateCmd(IntakeState.INTAKINGSLOW))
+      .onFalse(m_intake.setStateCmd(IntakeState.IDLE));
+    
+      
 
     m_auxController.leftTrigger(.5)
     .onTrue(

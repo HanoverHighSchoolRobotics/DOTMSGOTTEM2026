@@ -8,7 +8,9 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.cscore.HttpCamera.HttpCameraKind;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.net.PortForwarder; // Added for Limelight 3A
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard; // Added for dashboard placement
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -43,6 +45,24 @@ public class Robot extends TimedRobot {
     // camera2.setResolution(320,240);
     // camera2.setFPS(15);
   }
+
+  /** Added robotInit to run tasks right as the robot boots up */
+  @Override
+  public void robotInit() {
+    // 1. Forward the web config and stream ports from your specific hostname via USB
+    PortForwarder.add(5800, "limelight-dotm.local", 5800);
+    PortForwarder.add(5801, "limelight-dotm.local", 5801);
+
+    // 2. Point CameraServer to the forwarded localhost stream
+    HttpCamera limelightFeed = new HttpCamera("Limelight Stream", "http://localhost:5800/stream.mjpg");
+    CameraServer.startAutomaticCapture(limelightFeed);
+
+    // 3. Programmatically push it to a Shuffleboard tab called "Driver Station"
+    Shuffleboard.getTab("Driver Station")
+        .add("Limelight Feed", limelightFeed)
+        .withWidget("Camera Stream");
+  }
+
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.
